@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Skills Bubble Chart</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  body {
+    background: #0f111a;
+    color: #e6eef6;
+    display: flex;
+    justify-content: center;
+    padding-top: 40px;
+    align-items: center;
+    height: 100vh;
+    font-family: sans-serif;
+    font-size: 50px;
+  }
+  svg {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+  }
+  text {
+    font-size: 10px;
+    text-anchor: middle;
+    fill: #e6eef6;
+    pointer-events: none;
+  }
+  line {
+    stroke: rgba(255,255,255,0.3);
+    stroke-width: 2px;
+  }
+
+  .skill-circle {
+    stroke: #e6eef6;
+    stroke-width: 1.5px;
+  }
+  .skill-text { /* Skill text labels */
+    font-size: 10px;
+    fill: #e6eef6;
+    text-anchor: middle;
+    pointer-events: none;
+    font-weight: normal;
+  }
+  .category-text { /* Parent category labels */
+    font-size: 14px;
+    font-weight: bold;
+    fill: #e6eef6;
+    text-anchor: middle;
+    pointer-events: none;
+  }
+  #glitchText {
+    color: #0ff;
+    display: block;
+    justify-content: left;
+    align-items: center;
+    height: 100vh;
+    font-family: monospace;
+    font-size: 50px;
+    margin-top: 30px;
+    text-align: center;
+  }
+</style>
+</head>
+<body style="display: block; margin: 0;">
+
+  <div id="glitchText"></div>
+
+  <svg width="900" height="600"
+        style="background: rgba(255,255,255,0.05); border-radius: 12px;">
+    <rect width="100%" height="100%" fill="none"/>
+    <defs>
+      <radialGradient id="physicsGradient" cx="0%" cy="100%" r="100%">
+        <stop offset="0%" stop-color="#a40417"/>
+        <stop offset="100%" stop-color="#D83E3E"/>
+      </radialGradient>
+      <radialGradient id="mathGradient" cx="0%" cy="100%" r="100%">
+        <stop offset="0%" stop-color="#1E6DF0"/>
+        <stop offset="100%" stop-color="#32C8E6"/>
+      </radialGradient>
+      <radialGradient id="programmingGradient" cx="0%" cy="100%" r="100%">
+        <stop offset="0%" stop-color="#05b30b"/>
+        <stop offset="100%" stop-color="#206604"/>
+      </radialGradient>
+      <radialGradient id="toolsGradient" cx="0%" cy="100%" r="100%">
+        <stop offset="0%" stop-color="#5A656D"/>
+        <stop offset="100%" stop-color="#9DB1BC"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+
+<script>
+const words = ["HELLO", "WORLD", "GLITCH", "CHAOS"];
+const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+const glitchText = document.getElementById("glitchText");
+
+const glitchDuration = 300; // letter glitch duration
+const delayBetweenLetters = 100; // letter stagger duration
+const holdFinishDuration = 800; // time to hold finished word
+const glitchSpeed = 50; // speed of character changes during glitch
+let wordIndex = 0;
+
+function glitchLetter(letter, element, index, callback) {
+  let startTime = performance.now();
+
+  function step(time) {
+    const elapsed = time - startTime;
+    if (elapsed < glitchDuration) {
+      if (Math.floor(elapsed / glitchSpeed) !== Math.floor((elapsed - 16) / glitchSpeed)) {
+        element.textContent = chars[Math.floor(Math.random() * chars.length)];
+      }
+      requestAnimationFrame(step);
+    } else {
+      element.textContent = letter; // lock letter
+      if (callback) callback();
+    }
+  }
+  step(startTime);
+}
+
+function glitchWord(word, callback) {
+  glitchText.innerHTML = ""; // clear previous
+  const letters = word.split("");
+  letters.forEach((letter, i) => {
+    const span = document.createElement("span");
+    span.textContent = " ";
+    glitchText.appendChild(span);
+
+    setTimeout(() => {
+      glitchLetter(letter, span);
+    }, i * delayBetweenLetters);
+  });
+
+  // Call callback after all letters finished
+  setTimeout(callback, letters.length * delayBetweenLetters + glitchDuration + holdFinishDuration);
+}
+
+function loop() {
+  glitchWord(words[wordIndex], () => {
+    wordIndex = (wordIndex + 1) % words.length;
+    loop();
+  });
+}
+
+loop();
+</script>
+</div>
+
+
+<script>
+const nodes = [
+  {id:"Physics", size:50},
+  {id:"Mechanics", parent:"Physics", size:40},
+  {id:"Quantum", parent:"Mechanics", size:30},
+  {id:"Classical", parent:"Mechanics", size:30},
+  {id:"Statistical", parent:"Mechanics", size:30},
+
+  {id:"Electricity & Magnetism", parent:"Physics", size:30},
+  {id:"Special Relativity", parent:"Physics", size:30},
+  {id:"Optics", parent:"Physics", size:30},
+
+  {id:"Math", size:50},
+  {id:"Differential Equations", parent:"Math", size:30},
+  {id:"Complex Analysis", parent:"Math", size:30},
+  {id:"Multivariable Calculus", parent:"Math", size:30},
+  {id:"Matrix Algebra", parent:"Math", size:30},
+  {id:"Statistics", parent:"Math", size:30},
+
+  {id:"Programming", size:50},
+  {id:"Python", parent:"Programming", size:30},
+  {id:"C", parent:"Programming", size:30},
+  {id:"C++", parent:"Programming", size:30},
+  {id:"R", parent:"Programming", size:30},
+  {id:"Julia", parent:"Programming", size:30},
+  {id:"Java", parent:"Programming", size:30},
+  {id:"ROOT", parent:"Programming", size:30},
+  {id:"LaTeX", parent:"Programming", size:30},
+  {id:"Git", parent:"Programming", size:30},
+  {id:"Bash", parent:"Programming", size:30},
+
+  {id:"Tools", size:50},
+  {id:"Electronics", parent:"Tools", size:40},
+  {id:"Soldering", parent:"Electronics", size:30},
+  {id:"Oscilloscope", parent:"Electronics", size:30},
+  {id:"NI Multisim", parent:"Electronics", size:30},
+  {id:"Breadboarding", parent:"Electronics", size:30},
+
+  {id:"Lasers", parent:"Tools", size:30},
+  {id:"Dremel", parent:"Tools", size:30}
+];
+
+// ============== CHILD MAP ==============
+const childrenOf = {};
+nodes.forEach(n => {
+  if (n.parent) {
+    (childrenOf[n.parent] ||= []).push(n);
+  }
+});
+
+// ============== INITIAL LINKS (all edges; visibility handled later) ==============
+let links = nodes
+  .filter(n => n.parent)
+  .map(n => ({ source: n.id, target: n.parent }));
+
+// ============== D3 SETUP ==============
+const svg = d3.select("svg");
+const width = +svg.attr("width");
+const height = +svg.attr("height");
+
+const simulation = d3.forceSimulation(nodes)
+  .force("link", d3.forceLink(links).id(d => d.id).distance(90).strength(0.4))
+  .force("charge", d3.forceManyBody().strength(-60))
+  .force("center", d3.forceCenter(width / 2, height / 2))
+  .force("collision", d3.forceCollide().radius(d => d.size + 10))
+  .on("tick", ticked);
+
+// ============== DRAW LINKS ==============
+let link = svg.selectAll("line")
+  .data(links, d => d.source + "-" + d.target)
+  .enter()
+  .append("line")
+  .attr("stroke", "#aaa");
+
+// ============== DRAW NODES ==============
+const node = svg.selectAll("g")
+  .data(nodes)
+  .enter()
+  .append("g")
+  .call(
+    d3.drag()
+      .on("start", dragstarted)
+      .on("drag", dragged)
+      .on("end", dragended)
+  )
+  .on("click", clicked);
+
+function getTopParent(node, allNodes) {
+  let cur = node;
+  while (cur.parent) {
+    const p = allNodes.find(n => n.id === cur.parent);
+    if (!p) break;
+    cur = p;
+  }
+  return cur;
+}
+
+node.append("circle")
+  .attr("r", d => d.size)
+  .attr("fill", d => {
+    const top = getTopParent(d, nodes);
+    return `url(#${top.id.toLowerCase()}Gradient)`;
+  })
+  .attr("stroke", d => d.parent ? "#1864ab" : "#0b7285")
+  .attr("stroke-width", 2)
+
+// TEXT WRAPPING
+node.append("text")
+  .attr("text-anchor", "middle")
+  .attr("dy", "0.35em")
+  .each(function(d) {
+    const text = d3.select(this);
+    const words = d.id.split(/\s+/);
+    const lineHeight = 12;
+    let y = 0;
+    let line = "";
+    let tspan = text.append("tspan").attr("x", 0).attr("y", y);
+
+    words.forEach(word => {
+      const test = line ? line + " " + word : word;
+      tspan.text(test);
+      if (tspan.node().getComputedTextLength() > d.size * 1.8) {
+        tspan.text(line);
+        line = word;
+        y += lineHeight;
+        tspan = text.append("tspan").attr("x", 0).attr("y", y).text(word);
+      } else {
+        line = test;
+      }
+    });
+  });
+
+// ============== TICK UPDATE ==============
+function ticked() {
+  node.style("display", d => d.collapsed ? "none" : "block");
+  link.style("display", d =>
+    d.source.collapsed || d.target.collapsed ? "none" : "block"
+  );
+
+  nodes.forEach(d => {
+    if (!d.parent) {
+      const r = d.size;
+      d.x = Math.max(r, Math.min(width - r, d.x));
+      d.y = Math.max(r, Math.min(height - r, d.y));
+    }
+  });
+
+  svg.selectAll("line")
+    .attr("x1", d => d.source.x)
+    .attr("y1", d => d.source.y)
+    .attr("x2", d => d.target.x)
+    .attr("y2", d => d.target.y);
+
+  node.attr("transform", d => `translate(${d.x},${d.y})`);
+}
+
+// ============== DRAGging ==============
+function dragstarted(event, d) {
+  if (!event.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x;
+  d.fy = d.y;
+}
+
+function dragged(event, d) {
+  const lag = 0.2;
+  const vx = (event.x - d.x) * lag;
+  const vy = (event.y - d.y) * lag;
+  d.fx = d.x + vx;
+  d.fy = d.y + vy;
+}
+
+function dragended(event, d) {
+  if (!event.active) simulation.alphaTarget(0);
+  d.fx = d.x;
+  d.fy = d.y;
+  setTimeout(() => {
+    d.fx = null;
+    d.fy = null;
+  }, 200);
+}
+</script>
+
+</body>
+</html>
