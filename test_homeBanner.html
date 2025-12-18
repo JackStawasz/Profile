@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SVG Fourier Epicycles</title>
+<style>
+  body { margin: 0; background: #222; font-family: Arial, sans-serif; }
+  .banner {
+    width: 100%;
+    height: 400px;
+    background: #111;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .banner-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+  }
+  .canvas-container {
+    width: 100%;
+    height: 300px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .overlay-text {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 1);
+    font-size: 28px;
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .content {
+    padding: 40px;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <div class="banner-content">
+    <div class="canvas-container">
+      <div class="overlay-text" id="i-am-text"></div>
+      <canvas id="canvas"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <h1>Your Website Content</h1>
+  <p>The Fourier epicycles animation is now in a banner at the top of the page.</p>
+</div>
+
+<!-- Hidden SVG (replace path d="" with ANY SVG path) -->
+<!-- <svg width="0" height="0">
+  <path id="svgPath"
+        d="M0 0 7 0 1.89 8.03C1.1 7.5.5 6.6.5 5.5.5 4.4 1.1 3.5 1.89 2.97L7 11 0 11M0
+        11 5.11 2.97C6 3.6 6.5 4.4 6.5 5.5 6.5 6.6 5.9 7.55 5.11 8.03L0 0 0 0" />
+</svg> -->
+<svg width="0" height="0">
+  <path id="svgPath"
+        d="M0 0S-2.7-.5 0-3.8 1.3-2.4-.6 4.2M.9-.8C1-1.2 1.5-1.6 1.6-1.4.9-1.7.9-.2 1.4-.1S2-1.5
+        1.8-1 2-.1 2-.1Q2.2 0 2.3-.5C2.4-.8 2.3-1.2 2.9-1.4 2.5-1.4 2.3-1 2.3-.8S2.4-.1 3-.1 3.8-2.2
+        3.7-3.4C3.689-3.7 3.94-3.7 3.9-3.4Q3.8-2.6 2.9 1.6M3.7-1.8C4.2-2 4.4-2.1 4.7-2.5S3.8-2.1
+        3.7-1.8 4.1-1.2 4.4-.8M6.1-1.1C6.3-1.8 7.1-1.9 7.2-1 7.3.2 5.3.3 5.4-1 5.5-2.7 6.9-2.7 7-3.6
+        7.1-4.1 7.1-5.3 6.9-4.3L6.1.9C6 1.6 5.6 1.4 5.8 1.1S7.5.4 7.7-.4 8.26-2.8 8.3-3.4Q8.35-4.1
+        8.17-3.4C8.075-3 7.7-.9 7.8-.2S8.1-1.6 8.8-1.4C8.2-1.7 8.1-.2 8.6-.1S9.2-1.5 9-1 9.2-.1 9.2-.1
+        9.4.3 9.6-1.3Q9.65-1.8 9.5-1.3C9.375-.8 9.55-.3 9.7-.1S10-.1 10.05-.9Q10.06-1.2 9.98-.9C9.92-.7
+        10-.1 10.2-.03 10.5-.2 10.7-.8 10.7-1.4Q10.7-1.9 10.6-1.4C10.5-.9 10.6-.4 10.7-.1S11-1.5
+        11.6-1.4C11-1.7 10.9-.2 11.4-.1S12-1.5 11.8-1 12-.1 12-.1 12.9-.5 12.7-1.2C12.6-1.6 12.2-1.2
+        12.6-.9S12.9.2 12.4-.1 13.1333-.0333 13.5-.05 13.9-1.2 13.5-.8 13.4333.0333 13.5.2 12.8.8 9.3.6
+        13.7.6 17.4.6M7.5-2.4 16.4-2.3" />
+</svg>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const path = document.getElementById("svgPath");
+
+// Set canvas to fixed 700x400 size
+canvas.width = 700;
+canvas.height = 400;
+
+const SAMPLE_COUNT = 600;
+const textRect = document.getElementById("i-am-text").getBoundingClientRect();
+const CENTER_X = canvas.width / 2;
+const CENTER_Y = canvas.height / 2;
+
+let time = 0;
+let trace = [];
+let dots = []; // Array to hold the migrating dots
+let dotTime = 0; // Separate time for dots that never resets
+let nextDotId = 0; // Counter for spawning new dots
+
+// Initialize dots
+function initDots() {
+  const numDots = 20;
+  for (let i = 0; i < numDots; i++) {
+    dots.push(createDot(i * 0.5));
+  }
+}
+
+function createDot(offset) {
+  return {
+    id: nextDotId++,
+    spawnTime: dotTime - offset, // When this dot was spawned
+    phase: Math.random() * Math.PI * 2,
+    speed: 0.65 + Math.random() * 0.1, // Vary speed slightly (0.65 to 0.75)
+    trail: [] // Store recent positions for trail effect
+  };
+}
+
+initDots();
+
+/* ---------------- SVG Sampling ---------------- */
+function sampleSVG(path, N) {
+  const len = path.getTotalLength();
+  const pts = [];
+
+  for (let i = 0; i < N; i++) {
+    const p = path.getPointAtLength((i / N) * len);
+    pts.push({ x: p.x, y: p.y });
+  }
+
+  // center points
+  const mx = pts.reduce((s, p) => s + p.x, 0) / N;
+  const my = pts.reduce((s, p) => s + p.y, 0) / N;
+
+  // Use uniform scaling based on canvas height to maintain aspect ratio
+  const SCALE = canvas.height / 11 * 0.8; // 11 is the SVG height, 0.8 for padding
+  
+  return pts.map(p => ({ re: (p.x - mx) * SCALE, im: (p.y - my) * SCALE }));
+}
+
+/* ---------------- DFT ---------------- */
+function dft(signal) {
+  const X = [];
+  const N = signal.length;
+
+  for (let k = 0; k < N; k++) {
+    let re = 0, im = 0;
+
+    for (let n = 0; n < N; n++) {
+      const phi = (2 * Math.PI * k * n) / N;
+      re += signal[n].re * Math.cos(phi) + signal[n].im * Math.sin(phi);
+      im += -signal[n].re * Math.sin(phi) + signal[n].im * Math.cos(phi);
+    }
+
+    re /= N;
+    im /= N;
+
+    X.push({
+      freq: k,
+      amp: Math.hypot(re, im),
+      phase: Math.atan2(im, re)
+    });
+  }
+
+  return X.sort((a, b) => b.amp - a.amp);
+}
+
+/* ---------------- Epicycles ---------------- */
+function drawEpicycles(x, y, fourier, signal) {
+  for (const f of fourier) {
+    const px = x;
+    const py = y;
+
+    const k = (f.freq > signal.length / 2)
+      ? f.freq - signal.length
+      : f.freq;
+
+    const angle = k * time + f.phase;
+    x += f.amp * Math.cos(angle);
+    y += f.amp * Math.sin(angle);
+
+    // Draw radius line only (no circles)
+    ctx.strokeStyle = "#fff";
+    ctx.beginPath();
+    ctx.moveTo(px, py);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  }
+  return { x, y };
+}
+
+/* ---------------- Animation ---------------- */
+const MAX_TERMS = 1000;
+const signal = sampleSVG(path, SAMPLE_COUNT);
+const half = Math.floor(MAX_TERMS / 2);
+const fourier = dft(signal).filter(f =>
+  f.freq <= half || f.freq >= signal.length - half
+);
+
+const DURATION = 9; // seconds per full drawing
+const dt = (2 * Math.PI) / (DURATION * 60); // assuming 60fps
+const MAX_TRACE_POINTS = 1000; // Limit trace points to prevent memory/performance issues
+
+let isSettled = false;
+const SETTLE_TIME = 1; // 1 second to settle
+let settleCounter = 0;
+
+function animate() {
+  ctx.fillStyle = "#111";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Calculate all dot positions first (using separate dotTime)
+  const positions = [];
+  let groupCenterY = 0;
+  const dotsToRemove = [];
+  
+  for (let i = 0; i < dots.length; i++) {
+    const dot = dots[i];
+    const t = (dotTime - dot.spawnTime) * dot.speed;
+    
+    // Horizontal position - Organic continuous motion
+    const x = -50 + (t * (canvas.width + 100) / 10);
+    
+    // Check if dot has moved off-screen to the right
+    if (x > canvas.width + 100) {
+      dotsToRemove.push(i);
+      continue;
+    }
+    
+    // Only process if within extended viewport
+    if (x < canvas.width + 50) {
+      const progress = ((x + 50) / (canvas.width + 100));
+      
+      // MAIN SINUSOIDAL BAND PATH - FLIPPED (high on left, low on right)
+      const bandCenterY = canvas.height * 0.725 + Math.sin((1 - progress) * Math.PI * 2) * (canvas.height * 0.1);
+      
+      // Individual swoosh motion RELATIVE to the band
+      const swoosh1 = Math.sin((dotTime - dot.spawnTime) * 1.5 + dot.phase) * (canvas.height * 0.085);
+      const swoosh2 = Math.sin((dotTime - dot.spawnTime) * 0.8 + dot.phase * 1.3) * (canvas.height * 0.06);
+      
+      let y = bandCenterY + swoosh1 + swoosh2;
+      
+      positions.push({ x, y, index: i });
+      groupCenterY += y;
+    }
+  }
+  
+  // Remove dots that went off-screen and spawn new ones
+  for (let i = dotsToRemove.length - 1; i >= 0; i--) {
+    dots.splice(dotsToRemove[i], 1);
+    dots.push(createDot(0)); // Spawn new dot at left edge
+  }
+  
+  if (positions.length > 0) {
+    groupCenterY /= positions.length;
+  } else {
+    groupCenterY = canvas.height * 0.725;
+  }
+  
+  // Now draw with flocking and trails
+  for (let i = 0; i < positions.length; i++) {
+    const posData = positions[i];
+    const dot = dots[posData.index];
+    let pos = { x: posData.x, y: posData.y };
+    
+    // FLOCKING: Pull toward group center (reduced strength)
+    const pullStrength = 0.125; // Half as strong (was 0.25)
+    pos.y = pos.y + (groupCenterY - pos.y) * pullStrength;
+    
+    // Update trail - organically fade in/out at edges
+    dot.trail.push({ x: pos.x, y: pos.y });
+    if (dot.trail.length > 20) {
+      dot.trail.shift();
+    }
+    
+    // Draw COMET TRAIL with bright glow
+    if (dot.trail.length > 1) {
+      for (let j = 0; j < dot.trail.length - 1; j++) {
+        const fadeProgress = j / (dot.trail.length - 1);
+        const alpha = fadeProgress * 0.85; // More opaque (0 to 0.85)
+        const size = 1.5 + fadeProgress * 2.5; // Grow from 1.5 to 4
+        const glowSize = 20 * fadeProgress; // Strong glow
+        
+        ctx.shadowBlur = glowSize;
+        ctx.shadowColor = `rgba(100, 150, 255, ${alpha * 0.8})`;
+        ctx.fillStyle = `rgba(120, 170, 255, ${alpha})`;
+        
+        ctx.beginPath();
+        ctx.arc(dot.trail[j].x, dot.trail[j].y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+    
+    // Draw MAIN DOT with strongest glow (comet head)
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = "rgba(100, 150, 255, 1)";
+    ctx.fillStyle = "rgba(150, 200, 255, 1)";
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  ctx.shadowBlur = 0;
+
+  const v = drawEpicycles(CENTER_X, CENTER_Y, fourier, signal);
+  
+  // Settling phase - run epicycles but don't draw trace
+  if (!isSettled) {
+    settleCounter++;
+    if (settleCounter >= SETTLE_TIME * 60) { // 60fps * 1 second
+      isSettled = true;
+      time = 0; // reset time after settling
+      trace = [];
+    }
+  } else {
+    trace.push(v);
+    
+    // Keep trace array size manageable - remove oldest points when limit is reached
+    if (trace.length > MAX_TRACE_POINTS) {
+      trace.shift(); // Remove oldest point
+    }
+  }
+
+  // Draw the traced path with smooth transitions and glow effect
+  if (trace.length > 1) {
+    ctx.lineWidth = 2;
+    
+    let prev = null;
+    let currentPath = [];
+    
+    for (let i = 0; i < trace.length; i++) {
+      const p = trace[i];
+      
+      if (prev) {
+        const dx = p.x - prev.x;
+        const dy = p.y - prev.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 30) { // threshold for discontinuities
+          currentPath.push(p);
+        } else {
+          // Draw current path segment with glow
+          if (currentPath.length > 1) {
+            drawPathWithGlow(currentPath);
+          }
+          
+          // Start new segment
+          currentPath = [p];
+        }
+      } else {
+        currentPath = [p];
+      }
+      prev = p;
+    }
+    
+    // Draw final segment
+    if (currentPath.length > 1) {
+      drawPathWithGlow(currentPath);
+    }
+  }
+
+  function drawPathWithGlow(pathPoints) {
+    for (let i = 1; i < pathPoints.length; i++) {
+      // Calculate fade based on how recent this point is
+      const age = trace.length - trace.indexOf(pathPoints[i]);
+      const fadeFactor = Math.max(0, 1 - (age / trace.length));
+      
+      // Increase fading by 20% - apply exponential fade
+      const enhancedFade = Math.pow(fadeFactor, 1.0);
+      
+      // Brightest green at the pen tip, fading to darker green
+      const brightness = 40 + (205 * enhancedFade); // 40-255 range
+      const alpha = 0.3 + (0.7 * enhancedFade); // 0.3-1.0 range
+      
+      // Draw glow layers
+      if (enhancedFade > 0.5) {
+        ctx.shadowBlur = 15 * enhancedFade;
+        ctx.shadowColor = `rgb(0, ${brightness}, 0)`;
+      } else {
+        ctx.shadowBlur = 0;
+      }
+      
+      ctx.strokeStyle = `rgba(0, ${brightness}, 0, ${alpha})`;
+      ctx.beginPath();
+      ctx.moveTo(pathPoints[i-1].x, pathPoints[i-1].y);
+      ctx.lineTo(pathPoints[i].x, pathPoints[i].y);
+      ctx.stroke();
+    }
+    
+    // Reset shadow
+    ctx.shadowBlur = 0;
+  }
+
+  time += dt;
+
+  // Increment dotTime independently (never resets)
+  dotTime += dt;
+
+  // Loop continuously - reset time when cycle completes
+  if (time >= 2 * Math.PI) {
+    time = time % (2 * Math.PI); // Keep remainder to maintain continuity
+    // Don't clear trace - keep drawing on top
+  }
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
