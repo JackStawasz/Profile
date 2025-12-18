@@ -23,6 +23,7 @@ async function showSection(target) {
   }
 
   // Initialize section-specific scripts (run after the HTML is injected)
+  if (sectionId === 'home') setTimeout(() => initHome(), 0);
   if (sectionId === 'projects') setTimeout(() => initProjects(), 0);
   if (sectionId === 'contact') setTimeout(() => initContacts(), 0);
 }
