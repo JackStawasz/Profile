@@ -206,7 +206,7 @@ const fourier = dft(signal).filter(f =>
   f.freq <= half || f.freq >= signal.length - half
 );
 
-const DURATION = 9; // seconds per full drawing
+const DURATION = 5; // seconds per full drawing
 const dt = (2 * Math.PI) / (DURATION * 60); // assuming 60fps
 const MAX_TRACE_POINTS = 1000; // Limit trace points to prevent memory/performance issues
 
@@ -322,7 +322,11 @@ function animate() {
       trace = [];
     }
   } else {
-    trace.push(v);
+    trace.push({
+      x: v.x,
+      y: v.y,
+      t: performance.now()
+    });
     
     // Keep trace array size manageable - remove oldest points when limit is reached
     if (trace.length > MAX_TRACE_POINTS) {
@@ -370,12 +374,15 @@ function animate() {
 
   function drawPathWithGlow(pathPoints) {
     for (let i = 1; i < pathPoints.length; i++) {
-      // Calculate fade based on how recent this point is
+      // Calculate fade from point recency (in space & time)
       const age = trace.length - trace.indexOf(pathPoints[i]);
-      const fadeFactor = Math.max(0, 1 - (age / trace.length));
+      const timeFade = Math.max(0, 1 - (performance.now() - pathPoints[i].t) / (DURATION*1000))
+      const indexFade = Math.max(0, 1 - (age / trace.length));
+      const fadeFactor = timeFade * indexFade;
+      
       
       // Increase fading by 20% - apply exponential fade
-      const enhancedFade = Math.pow(fadeFactor, 1.0);
+      const enhancedFade = Math.pow(fadeFactor, 1.2);
       
       // Brightest green at the pen tip, fading to darker green
       const brightness = 40 + (205 * enhancedFade); // 40-255 range
