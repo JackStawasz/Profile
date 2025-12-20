@@ -9,7 +9,7 @@
     "organization": "NIST"
   },
   {
-    "title": "Sudoku Clone (Java Swing)",
+    "title": "Sudoku Clone",
     "description": "The Sudoku game rebuilt from scratch. Includes a backtracking solver algorithm and random puzzle generation.",
     "tags": ["java-swing", "gui", "game"],
     "url": "",
@@ -50,5 +50,14 @@
     "tags": ["data-structures", "c++"],
     "thumbnail": "data/hash_addresses.png",
     "organization": "W&M Computer Science"
+  },
+    {
+    "title": "Portfolio Website",
+    "description": "Website showcasing my professional accomplishments and technical creativity.",
+    "tags": ["design", "html"],
+    "url": "https://jackstawasz.github.io/Profile/",
+    "repo": "https://github.com/JackStawasz/Profile",
+    "thumbnail": "",
+    "organization": "Self-Driven"
   }
 ]
