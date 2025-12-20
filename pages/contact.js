@@ -25,7 +25,7 @@ function initContacts() {
     canvas.style.opacity = '0';
     canvas.style.transition = 'opacity 0.4s ease';
     
-    link.parentNode.insertBefore(canvas, link);
+    link.appendChild(canvas);
 
     const rect = link.getBoundingClientRect();
     const glowPadding = 20;
@@ -125,7 +125,7 @@ function initContacts() {
         ctx.fill();
       }
 
-      time += 0.015;
+      time += 0.02;
       animationId = requestAnimationFrame(drawGlow);
     }
 
