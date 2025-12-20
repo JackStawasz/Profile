@@ -1,25 +1,22 @@
-// Configuration
 const JSON_PATH = './data/projects.json';
 
-// State
 let projects = [];
 
-// DOM-dependent functions
 function initProjects() {
   const statusEl = document.getElementById('status');
   const listEl = document.getElementById('list');
   const qEl = document.getElementById('q');
-  const sortEl = document.getElementById('sort'); // ✅ Add this line
+  const sortEl = document.getElementById('sort');
 
-  // Show/hide status
-  function showStatus(message, type='loading', showRetry=false){
+  function showStatus(message, type = 'loading', showRetry = false) {
     statusEl.className = type;
     statusEl.innerHTML = '';
+    
     const text = document.createElement('div');
     text.textContent = message;
     statusEl.appendChild(text);
 
-    if (showRetry){
+    if (showRetry) {
       const btn = document.createElement('button');
       btn.textContent = 'Retry';
       btn.className = 'retry';
@@ -31,13 +28,12 @@ function initProjects() {
     listEl.hidden = true;
   }
 
-  function clearStatus(){
+  function clearStatus() {
     statusEl.hidden = true;
     listEl.hidden = false;
   }
 
-  // Fetch + render
-  async function fetchProjects(){
+  async function fetchProjects() {
     showStatus('Loading projects…', 'loading');
     try {
       const res = await fetch(JSON_PATH, { cache: 'no-store' });
@@ -52,18 +48,20 @@ function initProjects() {
     }
   }
 
-  function renderList(items){
+  function renderList(items) {
     listEl.innerHTML = '';
-    if (!items.length){
+    
+    if (!items.length) {
       showStatus('No projects found.', 'empty', false);
       return;
     }
+    
     clearStatus();
 
     items.forEach(p => {
       const card = document.createElement('article');
       card.className = 'project-card';
-      card.setAttribute('role','article');
+      card.setAttribute('role', 'article');
 
       const thumb = document.createElement('div');
       thumb.className = 'thumb';
@@ -71,10 +69,9 @@ function initProjects() {
         thumb.style.background = `url(${p.thumbnail}) center/cover`;
         thumb.textContent = '';
       } else {
-        thumb.textContent = (p.title || 'P').trim().slice(0,2).toUpperCase();
+        thumb.textContent = (p.title || 'P').trim().slice(0, 2).toUpperCase();
       }
 
-      // Add difficulty under thumbnail (optional)
       if (p.difficulty) {
         const difficulty = document.createElement('div');
         difficulty.className = 'difficulty';
@@ -106,7 +103,7 @@ function initProjects() {
 
       const tags = document.createElement('div');
       tags.className = 'tags';
-      (p.tags || []).slice(0,6).forEach(t => {
+      (p.tags || []).slice(0, 6).forEach(t => {
         const span = document.createElement('span');
         span.className = 'tag';
         span.textContent = t;
@@ -123,12 +120,14 @@ function initProjects() {
       meta.appendChild(title);
       if (p.description) meta.appendChild(desc);
       if ((p.tags || []).length) meta.appendChild(tags);
+      
       if (p.organization) {
         const org = document.createElement('div');
         org.className = 'organization';
         org.textContent = p.organization;
         card.appendChild(org);
       }
+      
       meta.appendChild(metaRow);
 
       card.appendChild(thumb);
@@ -137,10 +136,10 @@ function initProjects() {
     });
   }
 
-  // Filter
-  function filterProjects(q){
+  function filterProjects(q) {
     const text = (q || '').trim().toLowerCase();
     if (!text) return projects;
+    
     return projects.filter(p => {
       const inTitle = (p.title || '').toLowerCase().includes(text);
       const inDesc = (p.description || '').toLowerCase().includes(text);
@@ -150,9 +149,9 @@ function initProjects() {
     });
   }
 
-  // Sort
   function sortProjects(items, criterion) {
     if (!criterion) return items;
+    
     return [...items].sort((a, b) => {
       switch (criterion) {
         case 'title':
@@ -167,23 +166,18 @@ function initProjects() {
     });
   }
 
-  // Combined update
   function updateList() {
     const filtered = filterProjects(qEl.value);
     const sorted = sortProjects(filtered, sortEl.value);
     renderList(sorted);
   }
 
-  // Event listeners
   qEl.addEventListener('input', updateList);
   sortEl.addEventListener('change', updateList);
 
-  // Start fetching
   fetchProjects();
 }
 
-
-// Popup logic
 const popup = document.getElementById('popup');
 const frame = document.getElementById('popup-frame');
 const closeBtn = popup.querySelector('.close');
