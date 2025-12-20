@@ -49,7 +49,7 @@ function initHome() {
 
     const SAMPLE_COUNT = 600;
     signal = sampleSVG(path, SAMPLE_COUNT);
-    const MAX_TERMS = 80;
+    const MAX_TERMS = 1000;
     const half = Math.floor(MAX_TERMS / 2);
     fourier = dft(signal).filter(f =>
       f.freq <= half || f.freq >= signal.length - half
@@ -138,6 +138,7 @@ function initHome() {
       y += f.amp * Math.sin(angle);
       
       ctx.strokeStyle = "#fff";
+      ctx.lineWidth = 1.0;
       ctx.beginPath();
       ctx.moveTo(px, py);
       ctx.lineTo(x, y);
@@ -146,13 +147,61 @@ function initHome() {
     return { x, y };
   }
 
-  const DURATION = 9;
+  const DURATION = 5;
   const dt = (2 * Math.PI) / (DURATION * 60);
-  const MAX_TRACE_POINTS = 1000;
+  const MAX_TRACE_POINTS = 500;
 
   let isSettled = false;
   const SETTLE_TIME = 1;
   let settleCounter = 0;
+
+  let userDrawing = false;
+  let userTrace = [];
+  let userDrawnPaths = [];
+
+  canvas.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    userDrawing = true;
+    userTrace = [{ x, y, time: Date.now() }];
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    if (!userDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    userTrace.push({ x, y, time: Date.now() });
+  });
+
+  canvas.addEventListener('mouseup', (e) => {
+    if (e.button !== 0) return;
+    if (userDrawing && userTrace.length > 1) {
+      userDrawnPaths.push({
+        points: [...userTrace],
+        startTime: Date.now()
+      });
+    }
+    userDrawing = false;
+    userTrace = [];
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    if (userDrawing && userTrace.length > 1) {
+      userDrawnPaths.push({
+        points: [...userTrace],
+        startTime: Date.now()
+      });
+    }
+    userDrawing = false;
+    userTrace = [];
+  });
+
+  canvas.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  });
 
   function animate() {
     if (!controller.isRunning) return;
@@ -243,7 +292,7 @@ function initHome() {
     }
 
     if (trace.length > 1) {
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       let prev = null;
       let currentPath = [];
       
@@ -267,6 +316,21 @@ function initHome() {
       if (currentPath.length > 1) drawPathWithGlow(currentPath);
     }
 
+    if (userTrace.length > 1) {
+      ctx.lineWidth = 2;
+      drawActivePath(userTrace);
+    }
+
+    const currentTime = Date.now();
+    const fadeTime = 2000;
+    userDrawnPaths = userDrawnPaths.filter(path => {
+      const elapsed = currentTime - path.startTime;
+      if (elapsed > fadeTime) return false;
+      ctx.lineWidth = 2;
+      drawUserPath(path.points, elapsed, fadeTime);
+      return true;
+    });
+
     function drawPathWithGlow(pathPoints) {
       for (let i = 1; i < pathPoints.length; i++) {
         const age = trace.length - trace.indexOf(pathPoints[i]);
@@ -275,6 +339,45 @@ function initHome() {
         const brightness = 40 + (205 * enhancedFade);
         const alpha = 0.3 + (0.7 * enhancedFade);
         
+        if (enhancedFade > 0.5) {
+          ctx.shadowBlur = 15 * enhancedFade;
+          ctx.shadowColor = `rgb(0, ${brightness}, 0)`;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+        
+        ctx.strokeStyle = `rgba(0, ${brightness}, 0, ${alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(pathPoints[i-1].x, pathPoints[i-1].y);
+        ctx.lineTo(pathPoints[i].x, pathPoints[i].y);
+        ctx.stroke();
+      }
+      ctx.shadowBlur = 0;
+    }
+
+    function drawActivePath(pathPoints) {
+      for (let i = 1; i < pathPoints.length; i++) {
+        const brightness = 245;
+        const alpha = 1.0;
+        
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = `rgb(0, ${brightness}, 0)`;
+        ctx.strokeStyle = `rgba(0, ${brightness}, 0, ${alpha})`;
+        ctx.beginPath();
+        ctx.moveTo(pathPoints[i-1].x, pathPoints[i-1].y);
+        ctx.lineTo(pathPoints[i].x, pathPoints[i].y);
+        ctx.stroke();
+      }
+      ctx.shadowBlur = 0;
+    }
+
+    function drawUserPath(pathPoints, elapsed, fadeTime) {
+      const fadeFactor = Math.max(0, 1 - (elapsed / fadeTime));
+      const enhancedFade = Math.pow(fadeFactor, 1.2);
+      const brightness = 40 + (205 * enhancedFade);
+      const alpha = 0.3 + (0.7 * enhancedFade);
+      
+      for (let i = 1; i < pathPoints.length; i++) {
         if (enhancedFade > 0.5) {
           ctx.shadowBlur = 15 * enhancedFade;
           ctx.shadowColor = `rgb(0, ${brightness}, 0)`;
