@@ -3,7 +3,6 @@ const main = document.getElementById('main-content');
 
 let cursor, cursorDot;
 let mouseX = 0, mouseY = 0;
-let cursorX = 0, cursorY = 0;
 
 function initCustomCursor() {
   cursor = document.createElement('div');
@@ -14,15 +13,22 @@ function initCustomCursor() {
   cursor.appendChild(cursorDot);
   
   document.body.appendChild(cursor);
+  document.body.classList.add('custom-cursor-enabled');
   
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
     cursor.classList.add('active');
   });
   
   document.addEventListener('mouseleave', () => {
     cursor.classList.remove('active');
+  });
+  
+  document.addEventListener('mouseenter', () => {
+    cursor.classList.add('active');
   });
   
   document.addEventListener('mousedown', (e) => {
@@ -34,24 +40,13 @@ function initCustomCursor() {
   document.addEventListener('mouseup', () => {
     cursor.classList.remove('clicking');
   });
-  
-  function animateCursor() {
-    cursorX += (mouseX - cursorX) * 0.2;
-    cursorY += (mouseY - cursorY) * 0.2;
-    
-    cursor.style.left = cursorX + 'px';
-    cursor.style.top = cursorY + 'px';
-    
-    requestAnimationFrame(animateCursor);
-  }
-  animateCursor();
 }
 
 function createRipple(x, y) {
   const ripple = document.createElement('div');
   ripple.className = 'ripple';
-  ripple.style.left = (x - 10) + 'px';
-  ripple.style.top = (y - 10) + 'px';
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
   document.body.appendChild(ripple);
   
   setTimeout(() => ripple.remove(), 800);
@@ -101,7 +96,11 @@ function createDistortion(x, y) {
   animate();
 }
 
-document.addEventListener('DOMContentLoaded', initCustomCursor);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCustomCursor);
+} else {
+  initCustomCursor();
+}
 
 async function showSection(target) {
   const sections = main.querySelectorAll('section');
@@ -140,8 +139,16 @@ links.forEach(link => {
   });
 });
 
-const initialPage = window.location.hash.substring(1) || 'home';
+const initialPage = window.location.hash.substring(1) || 'pages/home';
 showSection(initialPage);
-links.forEach(l => {
-  if (l.getAttribute('href') === `#${initialPage}`) l.classList.add('active');
-});
+
+setTimeout(() => {
+  links.forEach(l => {
+    l.classList.remove('active');
+    const linkHref = l.getAttribute('href').substring(1);
+    const currentSection = document.querySelector('section:not([hidden])');
+    if (currentSection && linkHref === `pages/${currentSection.id}`) {
+      l.classList.add('active');
+    }
+  });
+}, 100);
