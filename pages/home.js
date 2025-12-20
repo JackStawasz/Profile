@@ -19,32 +19,55 @@ function initHome() {
   const controller = {
     isRunning: true,
     animationId: null,
+    resizeTimeout: null,
     stop: function() {
       this.isRunning = false;
       if (this.animationId) {
         cancelAnimationFrame(this.animationId);
         this.animationId = null;
       }
+      if (this.resizeTimeout) {
+        clearTimeout(this.resizeTimeout);
+      }
     }
   };
   
   homeAnimationController = controller;
 
-  const container = canvas.parentElement;
-  const displayWidth = container.offsetWidth;
-  const displayHeight = container.offsetHeight;
-  
-  canvas.width = displayWidth;
-  canvas.height = displayHeight;
-  
-  const aspectRatio = displayWidth / displayHeight;
-  const baseHeight = 300;
-  const baseWidth = 500;
-  const scale = Math.min(displayWidth / baseWidth, displayHeight / baseHeight);
+  let displayWidth, displayHeight, CENTER_X, CENTER_Y, signal, fourier;
 
-  const SAMPLE_COUNT = 600;
-  const CENTER_X = displayWidth / 3;
-  const CENTER_Y = displayHeight / 2;
+  function setupCanvas() {
+    const container = canvas.parentElement;
+    displayWidth = container.offsetWidth;
+    displayHeight = container.offsetHeight;
+    
+    canvas.width = displayWidth;
+    canvas.height = displayHeight;
+    
+    CENTER_X = displayWidth / 3;
+    CENTER_Y = displayHeight / 2;
+
+    const SAMPLE_COUNT = 600;
+    signal = sampleSVG(path, SAMPLE_COUNT);
+    const MAX_TERMS = 80;
+    const half = Math.floor(MAX_TERMS / 2);
+    fourier = dft(signal).filter(f =>
+      f.freq <= half || f.freq >= signal.length - half
+    );
+  }
+
+  setupCanvas();
+
+  window.addEventListener('resize', () => {
+    if (controller.resizeTimeout) {
+      clearTimeout(controller.resizeTimeout);
+    }
+    controller.resizeTimeout = setTimeout(() => {
+      if (controller.isRunning) {
+        setupCanvas();
+      }
+    }, 250);
+  });
 
   let time = 0;
   let trace = [];
@@ -122,13 +145,6 @@ function initHome() {
     }
     return { x, y };
   }
-
-  const MAX_TERMS = 80;
-  const signal = sampleSVG(path, SAMPLE_COUNT);
-  const half = Math.floor(MAX_TERMS / 2);
-  const fourier = dft(signal).filter(f =>
-    f.freq <= half || f.freq >= signal.length - half
-  );
 
   const DURATION = 9;
   const dt = (2 * Math.PI) / (DURATION * 60);
