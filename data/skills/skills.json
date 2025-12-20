@@ -1,0 +1,52 @@
+[
+  {
+    "topic": "Physics",
+    "icon": "⚛️",
+    "color": "#7dd3fc",
+    "skills": [
+      "Quantum Mechanics",
+      "Classical Mechanics",
+      "Electricity & Magnetism",
+      "Special Relativity",
+      "Optics",
+      "Thermodynamics"
+    ]
+  },
+  {
+    "topic": "Math",
+    "icon": "∑",
+    "color": "#a78bfa",
+    "skills": [
+      "Differential Equations",
+      "Complex Analysis",
+      "Multivariable Calculus",
+      "Matrix Algebra",
+      "Statistics",
+      "Linear Algebra"
+    ]
+  },
+  {
+    "topic": "Programming",
+    "icon": "💻",
+    "color": "#34d399",
+    "skills": [
+      "Python, C, C++",
+      "R, Java, Julia",
+      "ROOT, Git, LaTeX",
+      "Bash, JavaScript",
+      "Windows, Fusion 360"
+    ]
+  },
+  {
+    "topic": "Tools",
+    "icon": "🔧",
+    "color": "#fb923c",
+    "skills": [
+      "Soldering, Dremel",
+      "Oscilloscope",
+      "Lasers, Optics Components",
+      "NI Multisim",
+      "Breadboarding"
+    ]
+  }
+]

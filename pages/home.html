@@ -12,11 +12,6 @@
   </div>
 
   <!-- Hidden SVG for Fourier animation -->
-  <!-- <svg width="0" height="0">
-    <path id="svgPath"
-          d="M0 0 7 0 1.89 8.03C1.1 7.5.5 6.6.5 5.5.5 4.4 1.1 3.5 1.89 2.97L7 11 0 11M0
-          11 5.11 2.97C6 3.6 6.5 4.4 6.5 5.5 6.5 6.6 5.9 7.55 5.11 8.03L0 0 0 0" />
-  </svg> -->
   <svg width="0" height="0">
   <path id="svgPath"
         d="M0 0S-2.7-.5 0-3.8 1.3-2.4-.6 4.2M.9-.8C1-1.2 1.5-1.6 1.6-1.4.9-1.7.9-.2 1.4-.1S2-1.5
@@ -44,45 +39,31 @@
         </p>
       </div>
 
-      <div class="skills-card">
+      <div class="skills-carousel-card">
         <h2>Skills</h2>
-        <div class="skills-grid">
-          <div>
-            <h3>Physics</h3>
-            <ul>
-              <li>Quantum Mechanics</li>
-              <li>Classical Mechanics</li>
-              <li>Electricity & Magnetism</li>
-              <li>Special Relativity</li>
-              <li>Optics</li>
-            </ul>
+        <div class="carousel-container">
+          <button class="carousel-arrow carousel-arrow-left" aria-label="Previous skill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          
+          <div class="carousel-wrapper">
+            <div class="carousel-track" id="skillsCarouselTrack">
+              <!-- Slides will be dynamically inserted here -->
+            </div>
           </div>
-          <div>
-            <h3>Math</h3>
-            <ul>
-              <li>Differential Equations</li>
-              <li>Complex Analysis</li>
-              <li>Multivariable Calculus</li>
-              <li>Matrix Algebra</li>
-              <li>Statistics</li>
-            </ul>
-          </div>
-          <div>
-            <h3>Programming</h3>
-            <ul>
-              <li>Python, C, C++, R, Java, Julia</li>
-              <li>ROOT, Git, LaTeX, Bash</li>
-              <li>Windows, Fusion 360</li>
-            </ul>
-          </div>
-          <div>
-            <h3>Tools</h3>
-            <ul>
-              <li>Soldering, Dremel</li>
-              <li>Oscilloscope, Lasers, Optics Components</li>
-              <li>NI Multisim, Breadboarding</li>
-            </ul>
-          </div>
+          
+          <button class="carousel-arrow carousel-arrow-right" aria-label="Next skill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="carousel-controls">
+          <input type="range" class="carousel-slider" id="skillsSlider" min="0" max="3" value="0" step="1" aria-label="Navigate skills carousel">
+          <div class="carousel-dots" id="carouselDots"></div>
         </div>
       </div>
     </div>

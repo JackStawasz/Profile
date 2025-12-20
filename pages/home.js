@@ -481,28 +481,102 @@ function initTextRotation() {
   cycleMessages();
 }
 
+// Replace the existing initSkillsInteractivity function with this:
+
 function initSkillsInteractivity() {
-  const skillCategories = document.querySelectorAll('.skills-grid > div');
+  const track = document.getElementById('skillsCarouselTrack');
+  const slider = document.getElementById('skillsSlider');
+  const dotsContainer = document.getElementById('carouselDots');
+  const leftArrow = document.querySelector('.carousel-arrow-left');
+  const rightArrow = document.querySelector('.carousel-arrow-right');
   
-  skillCategories.forEach((category, index) => {
-    category.classList.add('skill-category');
-    
-    category.style.animationDelay = `${index * 0.1}s`;
-    
-    const h3 = category.querySelector('h3');
-    if (h3) {
-      const icons = {
-        'Physics': '⚛️',
-        'Math': '∑',
-        'Programming': '💻',
-        'Tools': '🔧'
-      };
-      const icon = icons[h3.textContent.trim()];
-      if (icon) {
-        h3.innerHTML = `<span class="skill-icon">${icon}</span>${h3.textContent}`;
-      }
+  if (!track || !slider || !dotsContainer) return;
+  
+  let skillsData = [];
+  let currentIndex = 0;
+  
+  async function loadSkills() {
+    try {
+      const response = await fetch('./data/skills/skills.json');
+      if (!response.ok) throw new Error('Failed to load skills');
+      skillsData = await response.json();
+      
+      slider.max = skillsData.length - 1;
+      
+      renderCarousel();
+      createDots();
+      updateCarousel(0);
+    } catch (error) {
+      console.error('Error loading skills:', error);
+      track.innerHTML = '<div class="carousel-slide"><p style="text-align: center; color: var(--muted);">Failed to load skills</p></div>';
     }
+  }
+  
+  function renderCarousel() {
+    track.innerHTML = '';
+    skillsData.forEach((category, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'carousel-slide';
+      slide.style.setProperty('--slide-color', category.color || 'var(--accent)');
+      
+      const title = document.createElement('h3');
+      title.innerHTML = `<span class="skill-icon">${category.icon || ''}</span>${category.topic}`;
+      
+      const list = document.createElement('ul');
+      category.skills.forEach(skill => {
+        const li = document.createElement('li');
+        li.textContent = skill;
+        list.appendChild(li);
+      });
+      
+      slide.appendChild(title);
+      slide.appendChild(list);
+      track.appendChild(slide);
+    });
+  }
+  
+  function createDots() {
+    dotsContainer.innerHTML = '';
+    skillsData.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.className = 'carousel-dot';
+      if (index === 0) dot.classList.add('active');
+      dot.addEventListener('click', () => goToSlide(index));
+      dotsContainer.appendChild(dot);
+    });
+  }
+  
+  function updateCarousel(index) {
+    currentIndex = Math.max(0, Math.min(index, skillsData.length - 1));
+    const offset = -currentIndex * 100;
+    track.style.transform = `translateX(${offset}%)`;
+    slider.value = currentIndex;
+    
+    document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentIndex);
+    });
+  }
+  
+  function goToSlide(index) {
+    updateCarousel(index);
+  }
+  
+  function nextSlide() {
+    goToSlide(currentIndex + 1);
+  }
+  
+  function prevSlide() {
+    goToSlide(currentIndex - 1);
+  }
+  
+  slider.addEventListener('input', (e) => {
+    updateCarousel(parseInt(e.target.value));
   });
+  
+  leftArrow.addEventListener('click', prevSlide);
+  rightArrow.addEventListener('click', nextSlide);
+  
+  loadSkills();
 }
 
 function initResearchCard() {
