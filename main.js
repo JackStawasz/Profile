@@ -1,19 +1,118 @@
 const links = document.querySelectorAll('.nav-links a');
 const main = document.getElementById('main-content');
 
-// Show/hide section and optionally fetch content
+let cursor, cursorDot;
+let mouseX = 0, mouseY = 0;
+let cursorX = 0, cursorY = 0;
+
+function initCustomCursor() {
+  cursor = document.createElement('div');
+  cursor.className = 'custom-cursor';
+  
+  cursorDot = document.createElement('div');
+  cursorDot.className = 'custom-cursor-dot';
+  cursor.appendChild(cursorDot);
+  
+  document.body.appendChild(cursor);
+  
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursor.classList.add('active');
+  });
+  
+  document.addEventListener('mouseleave', () => {
+    cursor.classList.remove('active');
+  });
+  
+  document.addEventListener('mousedown', (e) => {
+    cursor.classList.add('clicking');
+    createRipple(e.clientX, e.clientY);
+    createDistortion(e.clientX, e.clientY);
+  });
+  
+  document.addEventListener('mouseup', () => {
+    cursor.classList.remove('clicking');
+  });
+  
+  function animateCursor() {
+    cursorX += (mouseX - cursorX) * 0.2;
+    cursorY += (mouseY - cursorY) * 0.2;
+    
+    cursor.style.left = cursorX + 'px';
+    cursor.style.top = cursorY + 'px';
+    
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+}
+
+function createRipple(x, y) {
+  const ripple = document.createElement('div');
+  ripple.className = 'ripple';
+  ripple.style.left = (x - 10) + 'px';
+  ripple.style.top = (y - 10) + 'px';
+  document.body.appendChild(ripple);
+  
+  setTimeout(() => ripple.remove(), 800);
+}
+
+function createDistortion(x, y) {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'distortion-canvas';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  
+  const ctx = canvas.getContext('2d');
+  let frame = 0;
+  const maxFrames = 30;
+  
+  canvas.style.opacity = '0.6';
+  
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const progress = frame / maxFrames;
+    const radius = 150 * progress;
+    const strength = (1 - progress) * 30;
+    
+    for (let angle = 0; angle < Math.PI * 2; angle += 0.1) {
+      const distance = radius + Math.sin(angle * 8 + frame * 0.5) * strength * 0.3;
+      const px = x + Math.cos(angle) * distance;
+      const py = y + Math.sin(angle) * distance;
+      
+      ctx.strokeStyle = `rgba(125, 211, 252, ${(1 - progress) * 0.3})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, distance, angle, angle + 0.1);
+      ctx.stroke();
+    }
+    
+    frame++;
+    if (frame < maxFrames) {
+      requestAnimationFrame(animate);
+    } else {
+      canvas.style.opacity = '0';
+      setTimeout(() => canvas.remove(), 300);
+    }
+  }
+  
+  animate();
+}
+
+document.addEventListener('DOMContentLoaded', initCustomCursor);
+
 async function showSection(target) {
   const sections = main.querySelectorAll('section');
-  sections.forEach(s => s.hidden = true); // hide all sections
+  sections.forEach(s => s.hidden = true);
 
-  // get section by ID (last part of target)
   const sectionId = target.split('/').pop();
   const section = document.getElementById(sectionId);
   if (!section) return;
 
   section.hidden = false;
 
-  // fetch HTML for this section
   try {
     const res = await fetch(`pages/${sectionId}.html`);
     if (!res.ok) throw new Error('Page not found');
@@ -22,18 +121,15 @@ async function showSection(target) {
     section.innerHTML = `<p>⚠️ Failed to load ${sectionId}.html</p>`;
   }
 
-  // Initialize section-specific scripts (run after the HTML is injected)
   if (sectionId === 'home') setTimeout(() => initHome(), 0);
   if (sectionId === 'projects') setTimeout(() => initProjects(), 0);
   if (sectionId === 'contact') setTimeout(() => initContacts(), 0);
 }
 
-// Click handler
 links.forEach(link => {
   link.addEventListener('click', async e => {
     e.preventDefault();
 
-    // Update active link
     links.forEach(l => l.classList.remove('active'));
     link.classList.add('active');
 
@@ -44,7 +140,6 @@ links.forEach(link => {
   });
 });
 
-// Load initial section
 const initialPage = window.location.hash.substring(1) || 'home';
 showSection(initialPage);
 links.forEach(l => {

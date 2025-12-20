@@ -1,14 +1,13 @@
-// Global references
 let homeAnimationController = null;
 
 function initHome() {
-  // If animation is already running, stop it first
   if (homeAnimationController) {
     homeAnimationController.stop();
   }
   
-  // Initialize components
   initTextRotation();
+  initSkillsInteractivity();
+  initResearchCard();
 
   const canvas = document.getElementById("fourierCanvas");
   if (!canvas) return;
@@ -17,7 +16,6 @@ function initHome() {
   const path = document.getElementById("svgPath");
   if (!path) return;
 
-  // Create controller object to manage animation lifecycle
   const controller = {
     isRunning: true,
     animationId: null,
@@ -32,22 +30,21 @@ function initHome() {
   
   homeAnimationController = controller;
 
-  // Get actual display size
-  const displayWidth = canvas.offsetWidth;
-  const displayHeight = canvas.offsetHeight;
+  const container = canvas.parentElement;
+  const displayWidth = container.offsetWidth;
+  const displayHeight = container.offsetHeight;
   
-  // Set internal canvas size to fixed dimensions for consistent rendering
-  const INTERNAL_WIDTH = 500;
-  const INTERNAL_HEIGHT = 300;
-  canvas.width = INTERNAL_WIDTH;
-  canvas.height = INTERNAL_HEIGHT;
+  canvas.width = displayWidth;
+  canvas.height = displayHeight;
   
-  // Calculate scale factor for positioning elements across the stretched canvas
-  const scaleX = displayWidth / INTERNAL_WIDTH;
+  const aspectRatio = displayWidth / displayHeight;
+  const baseHeight = 300;
+  const baseWidth = 500;
+  const scale = Math.min(displayWidth / baseWidth, displayHeight / baseHeight);
 
   const SAMPLE_COUNT = 600;
-  const CENTER_X = INTERNAL_WIDTH / 3;
-  const CENTER_Y = INTERNAL_HEIGHT / 2;
+  const CENTER_X = displayWidth / 3;
+  const CENTER_Y = displayHeight / 2;
 
   let time = 0;
   let trace = [];
@@ -83,8 +80,8 @@ function initHome() {
     }
     const mx = pts.reduce((s, p) => s + p.x, 0) / N;
     const my = pts.reduce((s, p) => s + p.y, 0) / N;
-    const SCALE = INTERNAL_HEIGHT / 11 * 0.6;
-    return pts.map(p => ({ re: (p.x - mx) * SCALE, im: (p.y - my) * SCALE }));
+    const SCALE_FACTOR = displayHeight / 11 * 0.6;
+    return pts.map(p => ({ re: (p.x - mx) * SCALE_FACTOR, im: (p.y - my) * SCALE_FACTOR }));
   }
 
   function dft(signal) {
@@ -142,13 +139,11 @@ function initHome() {
   let settleCounter = 0;
 
   function animate() {
-    // Check if animation should stop
     if (!controller.isRunning) return;
 
     ctx.fillStyle = "#111";
-    ctx.fillRect(0, 0, INTERNAL_WIDTH, INTERNAL_HEIGHT);
+    ctx.fillRect(0, 0, displayWidth, displayHeight);
 
-    // Particle logic
     const positions = [];
     let groupCenterY = 0;
     const dotsToRemove = [];
@@ -156,18 +151,18 @@ function initHome() {
     for (let i = 0; i < dots.length; i++) {
       const dot = dots[i];
       const t = (dotTime - dot.spawnTime) * dot.speed;
-      const x = -50 + (t * (canvas.width + 100) / 10);
+      const x = -50 + (t * (displayWidth + 100) / 10);
       
-      if (x > canvas.width + 100) {
+      if (x > displayWidth + 100) {
         dotsToRemove.push(i);
         continue;
       }
       
-      if (x < canvas.width + 50) {
-        const progress = ((x + 50) / (canvas.width + 100));
-        const bandCenterY = canvas.height * 0.725 + Math.sin((1 - progress) * Math.PI * 2) * (canvas.height * 0.1);
-        const swoosh1 = Math.sin((dotTime - dot.spawnTime) * 1.5 + dot.phase) * (canvas.height * 0.085);
-        const swoosh2 = Math.sin((dotTime - dot.spawnTime) * 0.8 + dot.phase * 1.3) * (canvas.height * 0.06);
+      if (x < displayWidth + 50) {
+        const progress = ((x + 50) / (displayWidth + 100));
+        const bandCenterY = displayHeight * 0.725 + Math.sin((1 - progress) * Math.PI * 2) * (displayHeight * 0.1);
+        const swoosh1 = Math.sin((dotTime - dot.spawnTime) * 1.5 + dot.phase) * (displayHeight * 0.085);
+        const swoosh2 = Math.sin((dotTime - dot.spawnTime) * 0.8 + dot.phase * 1.3) * (displayHeight * 0.06);
         let y = bandCenterY + swoosh1 + swoosh2;
         positions.push({ x, y, index: i });
         groupCenterY += y;
@@ -179,9 +174,8 @@ function initHome() {
       dots.push(createDot(0));
     }
     
-    groupCenterY = positions.length > 0 ? groupCenterY / positions.length : canvas.height * 0.725;
+    groupCenterY = positions.length > 0 ? groupCenterY / positions.length : displayHeight * 0.725;
     
-    // Draw particles with flocking
     for (let i = 0; i < positions.length; i++) {
       const posData = positions[i];
       const dot = dots[posData.index];
@@ -192,7 +186,6 @@ function initHome() {
       dot.trail.push({ x: pos.x, y: pos.y });
       if (dot.trail.length > 20) dot.trail.shift();
       
-      // Draw trail
       if (dot.trail.length > 1) {
         for (let j = 0; j < dot.trail.length - 1; j++) {
           const fadeProgress = j / (dot.trail.length - 1);
@@ -209,7 +202,6 @@ function initHome() {
         }
       }
       
-      // Draw main dot
       ctx.shadowBlur = 25;
       ctx.shadowColor = "rgba(100, 150, 255, 1)";
       ctx.fillStyle = "rgba(150, 200, 255, 1)";
@@ -220,7 +212,6 @@ function initHome() {
     
     ctx.shadowBlur = 0;
 
-    // Epicycles
     const v = drawEpicycles(CENTER_X, CENTER_Y, fourier, signal);
     
     if (!isSettled) {
@@ -235,7 +226,6 @@ function initHome() {
       if (trace.length > MAX_TRACE_POINTS) trace.shift();
     }
 
-    // Draw trace path
     if (trace.length > 1) {
       ctx.lineWidth = 2;
       let prev = null;
@@ -292,14 +282,12 @@ function initHome() {
       time = time % (2 * Math.PI);
     }
 
-    // Store the animation frame ID for cleanup
     controller.animationId = requestAnimationFrame(animate);
   }
 
   animate();
 }
 
-// Optional: Stop animation when navigating away
 function cleanupHome() {
   if (homeAnimationController) {
     homeAnimationController.stop();
@@ -307,7 +295,6 @@ function cleanupHome() {
   }
 }
 
-// Text rotation functionality
 function initTextRotation() {
   const textElement = document.getElementById("welcome-text");
   if (!textElement) return;
@@ -337,10 +324,9 @@ function initTextRotation() {
       } else {
         clearInterval(typingInterval);
         isTyping = false;
-        // Wait 1 second before starting to delete
         setTimeout(callback, 1000);
       }
-    }, 80); // 80ms per character when typing
+    }, 80);
   }
   
   function deleteText(callback) {
@@ -357,10 +343,9 @@ function initTextRotation() {
       } else {
         clearInterval(deletingInterval);
         isTyping = false;
-        // Wait 500ms before typing next message
         setTimeout(callback, 500);
       }
-    }, 40); // 40ms per character when deleting (2x faster)
+    }, 40);
   }
   
   function cycleMessages() {
@@ -374,6 +359,115 @@ function initTextRotation() {
     });
   }
   
-  // Start the cycle
   cycleMessages();
+}
+
+function initSkillsInteractivity() {
+  const skillCategories = document.querySelectorAll('.skills-grid > div');
+  
+  skillCategories.forEach((category, index) => {
+    category.classList.add('skill-category');
+    
+    category.style.animationDelay = `${index * 0.1}s`;
+    
+    const h3 = category.querySelector('h3');
+    if (h3) {
+      const icons = {
+        'Physics': '⚛️',
+        'Math': '∑',
+        'Programming': '💻',
+        'Tools': '🔧'
+      };
+      const icon = icons[h3.textContent.trim()];
+      if (icon) {
+        h3.innerHTML = `<span class="skill-icon">${icon}</span>${h3.textContent}`;
+      }
+    }
+  });
+}
+
+function initResearchCard() {
+  const researchCard = document.querySelector('.card');
+  if (!researchCard) return;
+  
+  let particles = [];
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'absolute';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.opacity = '0';
+  canvas.style.transition = 'opacity 0.3s ease';
+  researchCard.appendChild(canvas);
+  
+  const ctx = canvas.getContext('2d');
+  let animationId = null;
+  
+  function resize() {
+    canvas.width = researchCard.offsetWidth;
+    canvas.height = researchCard.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  researchCard.addEventListener('mouseenter', () => {
+    canvas.style.opacity = '1';
+    particles = [];
+    for (let i = 0; i < 30; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5,
+        size: Math.random() * 2 + 1
+      });
+    }
+    animate();
+  });
+  
+  researchCard.addEventListener('mouseleave', () => {
+    canvas.style.opacity = '0';
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+  });
+  
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      
+      ctx.fillStyle = 'rgba(125, 211, 252, 0.6)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < 100) {
+          ctx.strokeStyle = `rgba(125, 211, 252, ${0.2 * (1 - dist / 100)})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    
+    animationId = requestAnimationFrame(animate);
+  }
 }
