@@ -1,12 +1,51 @@
 let homeAnimationController = null;
 
+// Skills data structure
+const skillsData = {
+  physics: [
+    { name: 'Quantum Mechanics', icon: '🌌', description: 'Wave functions, operators, and quantum states' },
+    { name: 'Classical Mechanics', icon: '⚙️', description: 'Newtonian dynamics and Lagrangian formalism' },
+    { name: 'Electricity & Magnetism', icon: '⚡', description: 'Maxwell equations and electromagnetic theory' },
+    { name: 'Special Relativity', icon: '🚀', description: 'Spacetime and relativistic dynamics' },
+    { name: 'Optics', icon: '🔬', description: 'Wave and geometric optics principles' }
+  ],
+  math: [
+    { name: 'Differential Equations', icon: '📐', description: 'ODEs, PDEs, and analytical solutions' },
+    { name: 'Complex Analysis', icon: '🔢', description: 'Complex functions and contour integration' },
+    { name: 'Multivariable Calculus', icon: '📊', description: 'Vector calculus and surface integrals' },
+    { name: 'Matrix Algebra', icon: '🎯', description: 'Linear transformations and eigenvalues' },
+    { name: 'Statistics', icon: '📈', description: 'Probability theory and statistical inference' }
+  ],
+  programming: [
+    { name: 'Python', icon: '🐍', description: 'Data analysis and scientific computing' },
+    { name: 'C/C++', icon: '⚡', description: 'High-performance computing' },
+    { name: 'R', icon: '📊', description: 'Statistical analysis and visualization' },
+    { name: 'Java', icon: '☕', description: 'Object-oriented programming' },
+    { name: 'Julia', icon: '🔶', description: 'Numerical and scientific computing' },
+    { name: 'ROOT', icon: '🌳', description: 'Data analysis framework for physics' },
+    { name: 'Git', icon: '📦', description: 'Version control and collaboration' },
+    { name: 'LaTeX', icon: '📝', description: 'Scientific document preparation' },
+    { name: 'Bash', icon: '💻', description: 'Shell scripting and automation' }
+  ],
+  tools: [
+    { name: 'Soldering', icon: '🔥', description: 'Electronic circuit assembly' },
+    { name: 'Dremel', icon: '🛠️', description: 'Precision fabrication and machining' },
+    { name: 'Oscilloscope', icon: '📡', description: 'Signal analysis and measurement' },
+    { name: 'Lasers', icon: '🔴', description: 'Optical alignment and spectroscopy' },
+    { name: 'Optics Components', icon: '🔭', description: 'Lens systems and optical benches' },
+    { name: 'NI Multisim', icon: '⚙️', description: 'Circuit simulation and design' },
+    { name: 'Breadboarding', icon: '🔌', description: 'Rapid prototyping of circuits' },
+    { name: 'Fusion 360', icon: '🎨', description: 'CAD design and 3D modeling' }
+  ]
+};
+
 function initHome() {
   if (homeAnimationController) {
     homeAnimationController.stop();
   }
   
   initTextRotation();
-  initSkillsInteractivity();
+  initSkillsCarousel();
   initResearchCard();
 
   const canvas = document.getElementById("fourierCanvas");
@@ -481,102 +520,129 @@ function initTextRotation() {
   cycleMessages();
 }
 
-// Replace the existing initSkillsInteractivity function with this:
-
-function initSkillsInteractivity() {
-  const track = document.getElementById('skillsCarouselTrack');
-  const slider = document.getElementById('skillsSlider');
-  const dotsContainer = document.getElementById('carouselDots');
-  const leftArrow = document.querySelector('.carousel-arrow-left');
-  const rightArrow = document.querySelector('.carousel-arrow-right');
+function initSkillsCarousel() {
+  const track = document.getElementById('skillsTrack');
+  const indicators = document.getElementById('carouselIndicators');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const bookmarks = document.querySelectorAll('.category-bookmark');
   
-  if (!track || !slider || !dotsContainer) return;
+  if (!track || !indicators || !prevBtn || !nextBtn) return;
   
-  let skillsData = [];
-  let currentIndex = 0;
+  let currentCategory = 'physics';
+  let currentSlide = 0;
+  let allSkills = [];
   
-  async function loadSkills() {
-    try {
-      const response = await fetch('./data/skills/skills.json');
-      if (!response.ok) throw new Error('Failed to load skills');
-      skillsData = await response.json();
-      
-      slider.max = skillsData.length - 1;
-      
-      renderCarousel();
-      createDots();
-      updateCarousel(0);
-    } catch (error) {
-      console.error('Error loading skills:', error);
-      track.innerHTML = '<div class="carousel-slide"><p style="text-align: center; color: var(--muted);">Failed to load skills</p></div>';
-    }
-  }
-  
-  function renderCarousel() {
-    track.innerHTML = '';
-    skillsData.forEach((category, index) => {
-      const slide = document.createElement('div');
-      slide.className = 'carousel-slide';
-      slide.style.setProperty('--slide-color', category.color || 'var(--accent)');
-      
-      const title = document.createElement('h3');
-      title.innerHTML = `<span class="skill-icon">${category.icon || ''}</span>${category.topic}`;
-      
-      const list = document.createElement('ul');
-      category.skills.forEach(skill => {
-        const li = document.createElement('li');
-        li.textContent = skill;
-        list.appendChild(li);
-      });
-      
-      slide.appendChild(title);
-      slide.appendChild(list);
-      track.appendChild(slide);
-    });
-  }
-  
-  function createDots() {
-    dotsContainer.innerHTML = '';
-    skillsData.forEach((_, index) => {
-      const dot = document.createElement('div');
-      dot.className = 'carousel-dot';
-      if (index === 0) dot.classList.add('active');
-      dot.addEventListener('click', () => goToSlide(index));
-      dotsContainer.appendChild(dot);
-    });
-  }
-  
-  function updateCarousel(index) {
-    currentIndex = Math.max(0, Math.min(index, skillsData.length - 1));
-    const offset = -currentIndex * 100;
-    track.style.transform = `translateX(${offset}%)`;
-    slider.value = currentIndex;
+  function renderCarousel(category) {
+    const skills = skillsData[category];
+    allSkills = skills;
+    currentSlide = 0;
     
-    document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentIndex);
+    // Clear and rebuild track
+    track.innerHTML = '';
+    indicators.innerHTML = '';
+    
+    skills.forEach((skill, index) => {
+      // Create slide
+      const slide = document.createElement('div');
+      slide.className = 'skill-slide';
+      slide.innerHTML = `
+        <div class="skill-icon-large">${skill.icon}</div>
+        <div class="skill-name">${skill.name}</div>
+        <div class="skill-description">${skill.description}</div>
+      `;
+      track.appendChild(slide);
+      
+      // Create indicator
+      const dot = document.createElement('div');
+      dot.className = `indicator-dot ${index === 0 ? 'active' : ''}`;
+      dot.addEventListener('click', () => goToSlide(index));
+      indicators.appendChild(dot);
     });
+    
+    updateCarousel();
   }
   
   function goToSlide(index) {
-    updateCarousel(index);
+    currentSlide = index;
+    updateCarousel();
   }
   
-  function nextSlide() {
-    goToSlide(currentIndex + 1);
+  function updateCarousel() {
+    const offset = -currentSlide * 100;
+    track.style.transform = `translateX(${offset}%)`;
+    
+    // Update indicators
+    const dots = indicators.querySelectorAll('.indicator-dot');
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentSlide);
+    });
+    
+    // Update buttons
+    prevBtn.disabled = currentSlide === 0;
+    nextBtn.disabled = currentSlide === allSkills.length - 1;
   }
   
-  function prevSlide() {
-    goToSlide(currentIndex - 1);
-  }
-  
-  slider.addEventListener('input', (e) => {
-    updateCarousel(parseInt(e.target.value));
+  // Event listeners
+  prevBtn.addEventListener('click', () => {
+    if (currentSlide > 0) {
+      currentSlide--;
+      updateCarousel();
+    }
   });
   
-  leftArrow.addEventListener('click', prevSlide);
-  rightArrow.addEventListener('click', nextSlide);
+  nextBtn.addEventListener('click', () => {
+    if (currentSlide < allSkills.length - 1) {
+      currentSlide++;
+      updateCarousel();
+    }
+  });
   
-  loadSkills();
+  bookmarks.forEach(bookmark => {
+    bookmark.addEventListener('click', () => {
+      bookmarks.forEach(b => b.classList.remove('active'));
+      bookmark.classList.add('active');
+      currentCategory = bookmark.dataset.category;
+      renderCarousel(currentCategory);
+    });
+  });
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft' && currentSlide > 0) {
+      currentSlide--;
+      updateCarousel();
+    } else if (e.key === 'ArrowRight' && currentSlide < allSkills.length - 1) {
+      currentSlide++;
+      updateCarousel();
+    }
+  });
+  
+  // Touch support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+  
+  track.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
+  
+  function handleSwipe() {
+    if (touchStartX - touchEndX > 50 && currentSlide < allSkills.length - 1) {
+      currentSlide++;
+      updateCarousel();
+    } else if (touchEndX - touchStartX > 50 && currentSlide > 0) {
+      currentSlide--;
+      updateCarousel();
+    }
+  }
+  
+  // Initialize with physics category
+  renderCarousel('physics');
 }
 
 function initResearchCard() {

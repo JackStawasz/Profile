@@ -11,21 +11,20 @@
     </div>
   </div>
 
-  <!-- Hidden SVG for Fourier animation -->
   <svg width="0" height="0">
-  <path id="svgPath"
-        d="M0 0S-2.7-.5 0-3.8 1.3-2.4-.6 4.2M.9-.8C1-1.2 1.5-1.6 1.6-1.4.9-1.7.9-.2 1.4-.1S2-1.5
-        1.8-1 2-.1 2-.1Q2.2 0 2.3-.5C2.4-.8 2.3-1.2 2.9-1.4 2.5-1.4 2.3-1 2.3-.8S2.4-.1 3-.1 3.8-2.2
-        3.7-3.4C3.689-3.7 3.94-3.7 3.9-3.4Q3.8-2.6 2.9 1.6M3.7-1.8C4.2-2 4.4-2.1 4.7-2.5S3.8-2.1
-        3.7-1.8 4.1-1.2 4.4-.8M6.1-1.1C6.3-1.8 7.1-1.9 7.2-1 7.3.2 5.3.3 5.4-1 5.5-2.7 6.9-2.7 7-3.6
-        7.1-4.1 7.1-5.3 6.9-4.3L6.1.9C6 1.6 5.6 1.4 5.8 1.1S7.5.4 7.7-.4 8.26-2.8 8.3-3.4Q8.35-4.1
-        8.17-3.4C8.075-3 7.7-.9 7.8-.2S8.1-1.6 8.8-1.4C8.2-1.7 8.1-.2 8.6-.1S9.2-1.5 9-1 9.2-.1 9.2-.1
-        9.4.3 9.6-1.3Q9.65-1.8 9.5-1.3C9.375-.8 9.55-.3 9.7-.1S10-.1 10.05-.9Q10.06-1.2 9.98-.9C9.92-.7
-        10-.1 10.2-.03 10.5-.2 10.7-.8 10.7-1.4Q10.7-1.9 10.6-1.4C10.5-.9 10.6-.4 10.7-.1S11-1.5
-        11.6-1.4C11-1.7 10.9-.2 11.4-.1S12-1.5 11.8-1 12-.1 12-.1 12.9-.5 12.7-1.2C12.6-1.6 12.2-1.2
-        12.6-.9S12.9.2 12.4-.1 13.1333-.0333 13.5-.05 13.9-1.2 13.5-.8 13.4333.0333 13.5.2 12.8.8 9.3.6
-        13.7.6 17.4.6M7.5-2.4 16.4-2.3" />
-</svg>
+    <path id="svgPath"
+          d="M0 0S-2.7-.5 0-3.8 1.3-2.4-.6 4.2M.9-.8C1-1.2 1.5-1.6 1.6-1.4.9-1.7.9-.2 1.4-.1S2-1.5
+          1.8-1 2-.1 2-.1Q2.2 0 2.3-.5C2.4-.8 2.3-1.2 2.9-1.4 2.5-1.4 2.3-1 2.3-.8S2.4-.1 3-.1 3.8-2.2
+          3.7-3.4C3.689-3.7 3.94-3.7 3.9-3.4Q3.8-2.6 2.9 1.6M3.7-1.8C4.2-2 4.4-2.1 4.7-2.5S3.8-2.1
+          3.7-1.8 4.1-1.2 4.4-.8M6.1-1.1C6.3-1.8 7.1-1.9 7.2-1 7.3.2 5.3.3 5.4-1 5.5-2.7 6.9-2.7 7-3.6
+          7.1-4.1 7.1-5.3 6.9-4.3L6.1.9C6 1.6 5.6 1.4 5.8 1.1S7.5.4 7.7-.4 8.26-2.8 8.3-3.4Q8.35-4.1
+          8.17-3.4C8.075-3 7.7-.9 7.8-.2S8.1-1.6 8.8-1.4C8.2-1.7 8.1-.2 8.6-.1S9.2-1.5 9-1 9.2-.1 9.2-.1
+          9.4.3 9.6-1.3Q9.65-1.8 9.5-1.3C9.375-.8 9.55-.3 9.7-.1S10-.1 10.05-.9Q10.06-1.2 9.98-.9C9.92-.7
+          10-.1 10.2-.03 10.5-.2 10.7-.8 10.7-1.4Q10.7-1.9 10.6-1.4C10.5-.9 10.6-.4 10.7-.1S11-1.5
+          11.6-1.4C11-1.7 10.9-.2 11.4-.1S12-1.5 11.8-1 12-.1 12-.1 12.9-.5 12.7-1.2C12.6-1.6 12.2-1.2
+          12.6-.9S12.9.2 12.4-.1 13.1333-.0333 13.5-.05 13.9-1.2 13.5-.8 13.4333.0333 13.5.2 12.8.8 9.3.6
+          13.7.6 17.4.6M7.5-2.4 16.4-2.3" />
+  </svg>
 
   <!-- Main Content -->
   <div class="home-content">
@@ -39,31 +38,33 @@
         </p>
       </div>
 
-      <div class="skills-carousel-card">
+      <div class="skills-card">
         <h2>Skills</h2>
-        <div class="carousel-container">
-          <button class="carousel-arrow carousel-arrow-left" aria-label="Previous skill">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M15 18l-6-6 6-6"/>
-            </svg>
-          </button>
-          
-          <div class="carousel-wrapper">
-            <div class="carousel-track" id="skillsCarouselTrack">
-              <!-- Slides will be dynamically inserted here -->
-            </div>
-          </div>
-          
-          <button class="carousel-arrow carousel-arrow-right" aria-label="Next skill">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </button>
-        </div>
         
-        <div class="carousel-controls">
-          <input type="range" class="carousel-slider" id="skillsSlider" min="0" max="3" value="0" step="1" aria-label="Navigate skills carousel">
-          <div class="carousel-dots" id="carouselDots"></div>
+        <!-- Category Bookmarks -->
+        <div class="category-bookmarks">
+          <button class="category-bookmark active" data-category="physics">⚛️ Physics</button>
+          <button class="category-bookmark" data-category="math">∑ Math</button>
+          <button class="category-bookmark" data-category="programming">💻 Programming</button>
+          <button class="category-bookmark" data-category="tools">🔧 Tools</button>
+        </div>
+
+        <!-- Carousel -->
+        <div class="carousel-container">
+          <div class="carousel-track" id="skillsTrack">
+            <!-- Slides will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="carousel-nav">
+          <button class="carousel-btn" id="prevBtn" aria-label="Previous skill">‹</button>
+          <button class="carousel-btn" id="nextBtn" aria-label="Next skill">›</button>
+        </div>
+
+        <!-- Indicators -->
+        <div class="carousel-indicators" id="carouselIndicators">
+          <!-- Dots will be dynamically inserted here -->
         </div>
       </div>
     </div>
