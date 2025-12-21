@@ -1,52 +1,145 @@
-[
-  {
-    "topic": "Physics",
-    "icon": "⚛️",
-    "color": "#7dd3fc",
-    "skills": [
-      "Quantum Mechanics",
-      "Classical Mechanics",
-      "Electricity & Magnetism",
-      "Special Relativity",
-      "Optics",
-      "Thermodynamics"
-    ]
-  },
-  {
-    "topic": "Math",
-    "icon": "∑",
-    "color": "#a78bfa",
-    "skills": [
-      "Differential Equations",
-      "Complex Analysis",
-      "Multivariable Calculus",
-      "Matrix Algebra",
-      "Statistics",
-      "Linear Algebra"
-    ]
-  },
-  {
-    "topic": "Programming",
-    "icon": "💻",
-    "color": "#34d399",
-    "skills": [
-      "Python, C, C++",
-      "R, Java, Julia",
-      "ROOT, Git, LaTeX",
-      "Bash, JavaScript",
-      "Windows, Fusion 360"
-    ]
-  },
-  {
-    "topic": "Tools",
-    "icon": "🔧",
-    "color": "#fb923c",
-    "skills": [
-      "Soldering, Dremel",
-      "Oscilloscope",
-      "Lasers, Optics Components",
-      "NI Multisim",
-      "Breadboarding"
-    ]
-  }
-]
+{
+  "physics": [
+    {
+      "name": "Quantum Mechanics",
+      "icon": "🌌",
+      "description": "Wave functions, operators, and quantum states"
+    },
+    {
+      "name": "Classical Mechanics",
+      "icon": "⚙️",
+      "description": "Newtonian dynamics and Lagrangian formalism"
+    },
+    {
+      "name": "Electricity & Magnetism",
+      "icon": "⚡",
+      "description": "Maxwell equations and electromagnetic theory"
+    },
+    {
+      "name": "Special Relativity",
+      "icon": "🚀",
+      "description": "Spacetime and relativistic dynamics"
+    },
+    {
+      "name": "Optics",
+      "icon": "🔬",
+      "description": "Wave and geometric optics principles"
+    }
+  ],
+  "math": [
+    {
+      "name": "Differential Equations",
+      "icon": "📐",
+      "description": "ODEs, PDEs, and analytical solutions"
+    },
+    {
+      "name": "Complex Analysis",
+      "icon": "🔢",
+      "description": "Complex functions and contour integration"
+    },
+    {
+      "name": "Multivariable Calculus",
+      "icon": "📊",
+      "description": "Vector calculus and surface integrals"
+    },
+    {
+      "name": "Matrix Algebra",
+      "icon": "🎯",
+      "description": "Linear transformations and eigenvalues"
+    },
+    {
+      "name": "Statistics",
+      "icon": "📈",
+      "description": "Probability theory and statistical inference"
+    }
+  ],
+  "programming": [
+    {
+      "name": "Python",
+      "icon": "🐍",
+      "description": "Data analysis and scientific computing"
+    },
+    {
+      "name": "C/C++",
+      "icon": "⚡",
+      "description": "High-performance computing"
+    },
+    {
+      "name": "R",
+      "icon": "📊",
+      "description": "Statistical analysis and visualization"
+    },
+    {
+      "name": "Java",
+      "icon": "☕",
+      "description": "Object-oriented programming"
+    },
+    {
+      "name": "Julia",
+      "icon": "🔶",
+      "description": "Numerical and scientific computing"
+    },
+    {
+      "name": "ROOT",
+      "icon": "🌳",
+      "description": "Data analysis framework for physics"
+    },
+    {
+      "name": "Git",
+      "icon": "📦",
+      "description": "Version control and collaboration"
+    },
+    {
+      "name": "LaTeX",
+      "icon": "📝",
+      "description": "Scientific document preparation"
+    },
+    {
+      "name": "Bash",
+      "icon": "💻",
+      "description": "Shell scripting and automation"
+    }
+  ],
+  "tools": [
+    {
+      "name": "Soldering",
+      "icon": "🔥",
+      "description": "Electronic circuit assembly"
+    },
+    {
+      "name": "Dremel",
+      "icon": "🛠️",
+      "description": "Precision fabrication and machining"
+    },
+    {
+      "name": "Oscilloscope",
+      "icon": "📡",
+      "description": "Signal analysis and measurement"
+    },
+    {
+      "name": "Lasers",
+      "icon": "🔴",
+      "description": "Optical alignment and spectroscopy"
+    },
+    {
+      "name": "Optics Components",
+      "icon": "🔭",
+      "description": "Lens systems and optical benches"
+    },
+    {
+      "name": "NI Multisim",
+      "icon": "⚙️",
+      "description": "Circuit simulation and design"
+    },
+    {
+      "name": "Breadboarding",
+      "icon": "🔌",
+      "description": "Rapid prototyping of circuits"
+    },
+    {
+      "name": "Fusion 360",
+      "icon": "🎨",
+      "description": "CAD design and 3D modeling"
+    }
+  ]
+}

@@ -1,48 +1,29 @@
 let homeAnimationController = null;
+let skillsData = null;
 
-// Skills data structure
-const skillsData = {
-  physics: [
-    { name: 'Quantum Mechanics', icon: '🌌', description: 'Wave functions, operators, and quantum states' },
-    { name: 'Classical Mechanics', icon: '⚙️', description: 'Newtonian dynamics and Lagrangian formalism' },
-    { name: 'Electricity & Magnetism', icon: '⚡', description: 'Maxwell equations and electromagnetic theory' },
-    { name: 'Special Relativity', icon: '🚀', description: 'Spacetime and relativistic dynamics' },
-    { name: 'Optics', icon: '🔬', description: 'Wave and geometric optics principles' }
-  ],
-  math: [
-    { name: 'Differential Equations', icon: '📐', description: 'ODEs, PDEs, and analytical solutions' },
-    { name: 'Complex Analysis', icon: '🔢', description: 'Complex functions and contour integration' },
-    { name: 'Multivariable Calculus', icon: '📊', description: 'Vector calculus and surface integrals' },
-    { name: 'Matrix Algebra', icon: '🎯', description: 'Linear transformations and eigenvalues' },
-    { name: 'Statistics', icon: '📈', description: 'Probability theory and statistical inference' }
-  ],
-  programming: [
-    { name: 'Python', icon: '🐍', description: 'Data analysis and scientific computing' },
-    { name: 'C/C++', icon: '⚡', description: 'High-performance computing' },
-    { name: 'R', icon: '📊', description: 'Statistical analysis and visualization' },
-    { name: 'Java', icon: '☕', description: 'Object-oriented programming' },
-    { name: 'Julia', icon: '🔶', description: 'Numerical and scientific computing' },
-    { name: 'ROOT', icon: '🌳', description: 'Data analysis framework for physics' },
-    { name: 'Git', icon: '📦', description: 'Version control and collaboration' },
-    { name: 'LaTeX', icon: '📝', description: 'Scientific document preparation' },
-    { name: 'Bash', icon: '💻', description: 'Shell scripting and automation' }
-  ],
-  tools: [
-    { name: 'Soldering', icon: '🔥', description: 'Electronic circuit assembly' },
-    { name: 'Dremel', icon: '🛠️', description: 'Precision fabrication and machining' },
-    { name: 'Oscilloscope', icon: '📡', description: 'Signal analysis and measurement' },
-    { name: 'Lasers', icon: '🔴', description: 'Optical alignment and spectroscopy' },
-    { name: 'Optics Components', icon: '🔭', description: 'Lens systems and optical benches' },
-    { name: 'NI Multisim', icon: '⚙️', description: 'Circuit simulation and design' },
-    { name: 'Breadboarding', icon: '🔌', description: 'Rapid prototyping of circuits' },
-    { name: 'Fusion 360', icon: '🎨', description: 'CAD design and 3D modeling' }
-  ]
-};
+async function loadSkillsData() {
+  try {
+    const response = await fetch('../data/skills/skills.json');
+    if (!response.ok) throw new Error('Failed to load skills data');
+    skillsData = await response.json();
+    console.log('Skills data loaded successfully:', Object.keys(skillsData));
+    console.log('Physics skills count:', skillsData.physics?.length);
+    console.log('Math skills count:', skillsData.math?.length);
+    console.log('Programming skills count:', skillsData.programming?.length);
+    console.log('Tools skills count:', skillsData.tools?.length);
+  } catch (error) {
+    console.error('Error loading skills:', error);
+    skillsData = null;
+  }
+}
 
-function initHome() {
+async function initHome() {
   if (homeAnimationController) {
     homeAnimationController.stop();
   }
+  
+  // Load skills data first
+  await loadSkillsData();
   
   initTextRotation();
   initSkillsCarousel();
@@ -527,7 +508,18 @@ function initSkillsCarousel() {
   const nextBtn = document.getElementById('nextBtn');
   const bookmarks = document.querySelectorAll('.category-bookmark');
   
-  if (!track || !indicators || !prevBtn || !nextBtn) return;
+  if (!track || !indicators || !prevBtn || !nextBtn) {
+    console.error('Carousel elements not found');
+    return;
+  }
+  
+  if (!skillsData) {
+    console.error('Skills data not loaded');
+    track.innerHTML = '<div class="skill-slide"><div class="skill-description">Error loading skills data. Please check that ../data/skills/skills.json exists.</div></div>';
+    return;
+  }
+  
+  console.log('Initializing carousel with data:', skillsData);
   
   let currentCategory = 'physics';
   let currentSlide = 0;
@@ -535,6 +527,14 @@ function initSkillsCarousel() {
   
   function renderCarousel(category) {
     const skills = skillsData[category];
+    
+    if (!skills || !Array.isArray(skills)) {
+      console.error(`No skills found for category: ${category}`);
+      track.innerHTML = '<div class="skill-slide"><div class="skill-description">No skills found for this category.</div></div>';
+      return;
+    }
+    
+    console.log(`Rendering ${skills.length} skills for category: ${category}`);
     allSkills = skills;
     currentSlide = 0;
     
@@ -546,9 +546,15 @@ function initSkillsCarousel() {
       // Create slide
       const slide = document.createElement('div');
       slide.className = 'skill-slide';
+      
+      // Generate image path from skill name
+      const imageName = skill.name.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_');
+      const imagePath = `../data/skills/${imageName}.png`;
+      
       slide.innerHTML = `
-        <div class="skill-icon-large">${skill.icon}</div>
-        <div class="skill-name">${skill.name}</div>
+        <img src="${imagePath}" alt="${skill.name}" class="skill-image" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div class="skill-icon-large" style="display:none;">${skill.icon}</div>
+        <div class="skill-name">${skill.icon} ${skill.name}</div>
         <div class="skill-description">${skill.description}</div>
       `;
       track.appendChild(slide);

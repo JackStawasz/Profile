@@ -207,54 +207,95 @@
 .carousel-container {
   position: relative;
   overflow: hidden;
+  height: 500px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
 }
 
 .carousel-track {
   display: flex;
+  height: 100%;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Skill Slide */
 .skill-slide {
   min-width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 2rem 1rem;
-  gap: 1.5rem;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.skill-slide:hover .skill-image {
+  opacity: 0.4;
+  transform: scale(1.05);
 }
 
 .skill-icon-large {
-  width: 120px;
-  height: 120px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 4rem;
-  background: rgba(125,211,252,0.1);
-  border-radius: 20px;
-  border: 2px solid rgba(125,211,252,0.2);
+  font-size: 8rem;
+  background: rgba(125,211,252,0.05);
+  z-index: 0;
+  opacity: 0.2;
   transition: all 0.3s ease;
 }
 
 .skill-slide:hover .skill-icon-large {
+  opacity: 0.3;
   transform: scale(1.1);
-  background: rgba(125,211,252,0.15);
-  border-color: rgba(125,211,252,0.4);
 }
 
 .skill-name {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: 600;
   color: var(--accent);
   text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  margin-top: auto;
 }
 
 .skill-description {
   text-align: center;
-  color: var(--muted);
-  max-width: 500px;
+  color: #e6eef6;
+  max-width: 600px;
   line-height: 1.6;
+  font-size: 1.1rem;
+  z-index: 1;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.4);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  backdrop-filter: blur(4px);
+  margin-bottom: auto;
 }
 
 /* Carousel Navigation */
