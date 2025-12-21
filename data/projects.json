@@ -3,7 +3,6 @@
     "title": "Nonlinear Optics Interferometry",
     "description": "Calculates third-order nonlinear susceptibility from spectral images.",
     "tags": ["physics", "data", "julia"],
-    "url": "",
     "repo": "",
     "thumbnail": "data/spectra_fit.png",
     "organization": "NIST"
@@ -12,7 +11,6 @@
     "title": "Sudoku Clone",
     "description": "The Sudoku game rebuilt from scratch. Includes a backtracking solver algorithm and random puzzle generation.",
     "tags": ["java-swing", "gui", "game"],
-    "url": "",
     "repo": "",
     "thumbnail": "data/sudoku_logo.png",
     "organization": "W&M Computer Science"
@@ -21,17 +19,14 @@
     "title": "Cosmic Ray Muon Brehmsstrahlung Finder",
     "description": "Filtration of reconstructed detector particle event tracks.",
     "tags": ["physics", "data", "ROOT"],
-    "url": "",
-    "repo": "",
     "thumbnail": "data/brehmsstrahlung.png",
     "organization": "Fermilab"
   },
   {
     "title": "3D Printer Profiles",
-    "description": "Profiles and models for the EVO 3D printer.",
+    "description": "Modelled 24 mechanical components in CAD by following blueprints.",
     "tags": ["3d-printing", "cad", "fusion360"],
-    "url": "",
-    "repo": "",
+    "url": "https://ed.iitm.ac.in/~raman/Autodesk%20Inventor%20Practice%20Part%20Drawings.pdf",
     "thumbnail": "data/fusion_binoculars.png",
     "organization": "Self-Driven"
   },
@@ -40,7 +35,6 @@
     "description": "Spatial audio mixer with tone control and LED indicators.",
     "tags": ["electronics", "audio"],
     "url": "https://www.youtube.com/embed/Cur8Sdw-NbU?si=bpx0fypQFqrrwP3i",
-    "repo": "",
     "thumbnail": "data/mixsense_diagram.png",
     "organization": "W&M Physics"
   },
@@ -48,10 +42,11 @@
     "title": "Address Hash Table",
     "description": "Implementation of a hash table with collision resolution via chaining.",
     "tags": ["data-structures", "c++"],
+    "repo": "",
     "thumbnail": "data/hash_addresses.png",
     "organization": "W&M Computer Science"
   },
-    {
+  {
     "title": "Portfolio Website",
     "description": "Website showcasing my professional accomplishments and technical creativity.",
     "tags": ["design", "html"],
