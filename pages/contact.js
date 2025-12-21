@@ -125,7 +125,7 @@ function initContacts() {
         ctx.fill();
       }
 
-      time += 0.02;
+      time += 0.03;
       animationId = requestAnimationFrame(drawGlow);
     }
 
