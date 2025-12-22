@@ -86,21 +86,16 @@ function initProjects() {
 
       const title = document.createElement('h2');
       title.className = 'title';
-      const a = document.createElement('a');
-      a.href = '#';
-      a.textContent = p.title || 'Untitled project';
-      a.title = 'View project';
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        if (p.url) openPopup(p.url);
-      });
-      a.setAttribute('aria-label', `Open project ${p.title || 'Untitled project'}`);
-      title.appendChild(a);
+      title.textContent = p.title || 'Untitled project';
 
       const desc = document.createElement('p');
       desc.className = 'desc';
       desc.textContent = p.description || '';
 
+      const metaRow = document.createElement('div');
+      metaRow.className = 'meta-row';
+      
+      // Left side - tags
       const tags = document.createElement('div');
       tags.className = 'tags';
       (p.tags || []).slice(0, 6).forEach(t => {
@@ -109,17 +104,45 @@ function initProjects() {
         span.textContent = t;
         tags.appendChild(span);
       });
-
-      const metaRow = document.createElement('div');
-      metaRow.className = 'meta-row';
-      const small = document.createElement('div');
-      small.className = 'small';
-      small.textContent = p.repo ? 'Repo: ' + p.repo : '';
       
-      metaRow.appendChild(small);
+      // Right side - links
+      const linksContainer = document.createElement('div');
+      linksContainer.className = 'project-links';
+      
+      if (p.url) {
+        const urlLink = document.createElement('a');
+        urlLink.href = '#';
+        urlLink.className = 'project-link';
+        urlLink.innerHTML = '🔗 Go to Project';
+        urlLink.title = 'View project';
+        urlLink.addEventListener('click', e => {
+          e.preventDefault();
+          openPopup(p.url);
+        });
+        urlLink.setAttribute('aria-label', `Open project ${p.title || 'Untitled project'}`);
+        linksContainer.appendChild(urlLink);
+      }
+      
+      if (p.repo) {
+        const repoLink = document.createElement('a');
+        repoLink.href = p.repo;
+        repoLink.className = 'project-link';
+        repoLink.innerHTML = '📦 Go to Repo';
+        repoLink.title = 'View repository';
+        repoLink.addEventListener('click', e => {
+          e.preventDefault();
+          window.open(p.repo, '_blank', 'noopener,noreferrer');
+        });
+        repoLink.setAttribute('aria-label', `View repository for ${p.title || 'Untitled project'}`);
+        linksContainer.appendChild(repoLink);
+      }
+      
+      metaRow.appendChild(tags);
+      metaRow.appendChild(linksContainer);
+
       meta.appendChild(title);
       if (p.description) meta.appendChild(desc);
-      if ((p.tags || []).length) meta.appendChild(tags);
+      if ((p.tags || []).length || p.url || p.repo) meta.appendChild(metaRow);
       
       if (p.organization) {
         const org = document.createElement('div');
@@ -128,8 +151,6 @@ function initProjects() {
         card.appendChild(org);
       }
       
-      meta.appendChild(metaRow);
-
       card.appendChild(thumb);
       card.appendChild(meta);
       listEl.appendChild(card);
@@ -160,6 +181,10 @@ function initProjects() {
           return (a.organization || '').localeCompare(b.organization || '');
         case 'difficulty':
           return (a.difficulty || 0) - (b.difficulty || 0);
+        case 'has-link':
+          return (b.url ? 1 : 0) - (a.url ? 1 : 0);
+        case 'has-repo':
+          return (b.repo ? 1 : 0) - (a.repo ? 1 : 0);
         default:
           return 0;
       }

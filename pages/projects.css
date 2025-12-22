@@ -170,15 +170,7 @@ select.search:invalid {
 
 .title {
   margin: 0;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.title a {
-  color: inherit;
-  text-decoration: none;
+  font-size: 1.2rem;
 }
 
 .desc {
@@ -195,7 +187,6 @@ select.search:invalid {
 
 /* Tags */
 .tags {
-  margin-top: 8px;
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
@@ -213,14 +204,36 @@ select.search:invalid {
 .meta .meta-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 12px;
   margin-top: 8px;
+  flex-wrap: wrap;
 }
 
-.small {
-  color: var(--muted);
-  font-size: 0.85rem;
+.project-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+
+.project-link {
+  font-size: 0.8rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(125,211,252,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(125,211,252,0.3);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.project-link:hover {
+  background: rgba(125,211,252,0.2);
+  border-color: var(--accent);
+  transform: translateY(-2px);
 }
 
 /* Difficulty */
