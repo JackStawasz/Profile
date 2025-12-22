@@ -24,7 +24,7 @@
   },
   {
     "title": "3D Printer Profiles",
-    "description": "Modelled 24 mechanical components in CAD by following blueprints.",
+    "description": "Models for 24 mechanical components in CAD built from online blueprints.",
     "tags": ["3d-printing", "cad", "fusion360"],
     "url": "https://ed.iitm.ac.in/~raman/Autodesk%20Inventor%20Practice%20Part%20Drawings.pdf",
     "thumbnail": "data/projects/fusion_binoculars.png",
