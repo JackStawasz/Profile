@@ -262,6 +262,7 @@ async function initHome() {
     groupCenterY = positions.length > 0 ? groupCenterY / positions.length : displayHeight * 0.725;
     
     for (let i = 0; i < positions.length; i++) {
+      const dotAlpha = 0.5;
       const posData = positions[i];
       const dot = dots[posData.index];
       let pos = { x: posData.x, y: posData.y };
@@ -279,8 +280,8 @@ async function initHome() {
           const glowSize = 20 * fadeProgress;
           
           ctx.shadowBlur = glowSize;
-          ctx.shadowColor = `rgba(100, 150, 255, ${alpha * 0.8})`;
-          ctx.fillStyle = `rgba(120, 170, 255, ${alpha})`;
+          ctx.shadowColor = `rgba(100, 150, 255, ${0.6 * alpha * dotAlpha})`;
+          ctx.fillStyle = `rgba(120, 170, 255, ${alpha * dotAlpha})`;
           ctx.beginPath();
           ctx.arc(dot.trail[j].x, dot.trail[j].y, size, 0, Math.PI * 2);
           ctx.fill();
@@ -288,8 +289,8 @@ async function initHome() {
       }
       
       ctx.shadowBlur = 25;
-      ctx.shadowColor = "rgba(100, 150, 255, 1)";
-      ctx.fillStyle = "rgba(150, 200, 255, 1)";
+      ctx.shadowColor = `rgba(100, 150, 255, ${dotAlpha}))`;
+      ctx.fillStyle = `rgba(150, 200, 255, ${dotAlpha})`;
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
       ctx.fill();
@@ -502,13 +503,14 @@ function initTextRotation() {
 }
 
 function initSkillsCarousel() {
+  const skillsCard = document.querySelector('.skills-card');
   const track = document.getElementById('skillsTrack');
   const indicators = document.getElementById('carouselIndicators');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const bookmarks = document.querySelectorAll('.category-bookmark');
   
-  if (!track || !indicators || !prevBtn || !nextBtn) {
+  if (!track || !indicators || !prevBtn || !nextBtn || !skillsCard) {
     console.error('Carousel elements not found');
     return;
   }
@@ -521,9 +523,35 @@ function initSkillsCarousel() {
   
   console.log('Initializing carousel with data:', skillsData);
   
+  // Create carousel wrapper
+  const carouselWrapper = document.createElement('div');
+  carouselWrapper.className = 'carousel-wrapper';
+  
+  // Move carousel container into wrapper
+  const carouselContainer = document.querySelector('.carousel-container');
+  if (carouselContainer) {
+    carouselContainer.remove();
+  }
+  
+  // Create new carousel container
+  const newCarouselContainer = document.createElement('div');
+  newCarouselContainer.className = 'carousel-container';
+  newCarouselContainer.appendChild(track);
+  
+  carouselWrapper.appendChild(newCarouselContainer);
+  
+  // Insert wrapper after category bookmarks
+  const bookmarksContainer = document.querySelector('.category-bookmarks');
+  bookmarksContainer.parentNode.insertBefore(carouselWrapper, bookmarksContainer.nextSibling);
+  
   let currentCategory = 'physics';
   let currentSlide = 0;
   let allSkills = [];
+  let carouselWidth = 0;
+  
+  function updateCarouselWidth() {
+    carouselWidth = newCarouselContainer.offsetWidth;
+  }
   
   function renderCarousel(category) {
     const skills = skillsData[category];
@@ -542,10 +570,13 @@ function initSkillsCarousel() {
     track.innerHTML = '';
     indicators.innerHTML = '';
     
+    updateCarouselWidth();
+    
     skills.forEach((skill, index) => {
       // Create slide
       const slide = document.createElement('div');
       slide.className = 'skill-slide';
+      slide.style.width = carouselWidth + 'px';
       
       // Generate image path from skill name
       const imageName = skill.name.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_');
@@ -575,8 +606,9 @@ function initSkillsCarousel() {
   }
   
   function updateCarousel() {
-    const offset = -currentSlide * 100;
-    track.style.transform = `translateX(${offset}%)`;
+    updateCarouselWidth();
+    const offset = -currentSlide * carouselWidth;
+    track.style.transform = `translateX(${offset}px)`;
     
     // Update indicators
     const dots = indicators.querySelectorAll('.indicator-dot');
@@ -646,6 +678,11 @@ function initSkillsCarousel() {
       updateCarousel();
     }
   }
+  
+  // Window resize handler
+  window.addEventListener('resize', () => {
+    updateCarousel();
+  });
   
   // Initialize with physics category
   renderCarousel('physics');
