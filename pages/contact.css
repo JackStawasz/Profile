@@ -16,8 +16,8 @@
 
 .profile-logo {
   position: absolute;
-  top: 10rem;
-  right: 5rem;
+  top: 20%;
+  right: 15%;
   width: 96px;
   height: 210px;
   color: var(--accent);
