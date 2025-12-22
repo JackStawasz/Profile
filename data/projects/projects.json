@@ -4,7 +4,7 @@
     "description": "Calculates third-order nonlinear susceptibility from spectral images.",
     "tags": ["physics", "data", "julia"],
     "repo": "",
-    "thumbnail": "data/spectra_fit.png",
+    "thumbnail": "data/projects/spectra_fit.png",
     "organization": "NIST"
   },
   {
@@ -12,14 +12,14 @@
     "description": "The Sudoku game rebuilt from scratch. Includes a backtracking solver algorithm and random puzzle generation.",
     "tags": ["java-swing", "gui", "game"],
     "repo": "",
-    "thumbnail": "data/sudoku_logo.png",
+    "thumbnail": "data/projects/sudoku_logo.png",
     "organization": "W&M Computer Science"
   },
   {
     "title": "Cosmic Ray Muon Brehmsstrahlung Finder",
     "description": "Filtration of reconstructed detector particle event tracks.",
     "tags": ["physics", "data", "ROOT"],
-    "thumbnail": "data/brehmsstrahlung.png",
+    "thumbnail": "data/projects/brehmsstrahlung.png",
     "organization": "Fermilab"
   },
   {
@@ -27,7 +27,7 @@
     "description": "Modelled 24 mechanical components in CAD by following blueprints.",
     "tags": ["3d-printing", "cad", "fusion360"],
     "url": "https://ed.iitm.ac.in/~raman/Autodesk%20Inventor%20Practice%20Part%20Drawings.pdf",
-    "thumbnail": "data/fusion_binoculars.png",
+    "thumbnail": "data/projects/fusion_binoculars.png",
     "organization": "Self-Driven"
   },
   {
@@ -35,7 +35,7 @@
     "description": "Spatial audio mixer with tone control and LED indicators.",
     "tags": ["electronics", "audio"],
     "url": "https://www.youtube.com/embed/Cur8Sdw-NbU?si=bpx0fypQFqrrwP3i",
-    "thumbnail": "data/mixsense_diagram.png",
+    "thumbnail": "data/projects/mixsense_diagram.png",
     "organization": "W&M Physics"
   },
   {
@@ -43,7 +43,7 @@
     "description": "Implementation of a hash table with collision resolution via chaining.",
     "tags": ["data-structures", "c++"],
     "repo": "",
-    "thumbnail": "data/hash_addresses.png",
+    "thumbnail": "data/projects/hash_addresses.png",
     "organization": "W&M Computer Science"
   },
   {

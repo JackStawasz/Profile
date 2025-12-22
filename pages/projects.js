@@ -1,4 +1,4 @@
-const JSON_PATH = './data/projects.json';
+const JSON_PATH = './data/projects/projects.json';
 
 let projects = [];
 
