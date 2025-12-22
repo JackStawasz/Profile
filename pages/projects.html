@@ -1,13 +1,18 @@
 <header>
     <div>
-    <h1>My Projects</h1>
-    <div class="muted">Fetched from <code>projects.json</code></div>
+        <svg class="projects-logo">
+            <use href="#logo"></use>
+        </svg>
+        <div>
+            <h1>My Projects</h1>
+            <div class="muted">Fetched from <code>projects.json</code></div>
+        </div>
     </div>
     <div class="controls">
         <select id="sort" class="search" required>
-        <option value="" disabled selected>Sort Type</option>
-        <option value="title">Title (A–Z)</option>
-        <option value="organization">Organization</option>
+            <option value="" disabled selected>Sort Type</option>
+            <option value="title">Title (A–Z)</option>
+            <option value="organization">Organization</option>
         </select>
         <input class="search" id="q" placeholder="Filter projects (title or tags)" aria-label="Search projects" />
     </div>

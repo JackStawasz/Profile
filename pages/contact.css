@@ -11,6 +11,25 @@
   gap: 1.5rem;
   box-shadow: 0 8px 20px rgba(0,0,0,0.3);
   margin: auto;
+  position: relative;
+}
+
+.profile-logo {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 48px;
+  height: 105px;
+  color: var(--accent);
+  opacity: 0.3;
+  filter: drop-shadow(0 0 6px rgba(125, 211, 252, 0.4));
+  transition: all 0.3s ease;
+  overflow: visible;
+}
+
+.profile-card:hover .profile-logo {
+  opacity: 0.6;
+  transform: scale(1.1);
 }
 
 .profile-header {

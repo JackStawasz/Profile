@@ -147,6 +147,22 @@ main.hidden {
 .nav-left {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 32px;
+  height: 70px;
+  color: var(--accent);
+  flex-shrink: 0;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(125, 211, 252, 0.5));
+  overflow: visible;
+}
+
+.brand-logo:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 12px rgba(125, 211, 252, 0.8));
 }
 
 .nav-left .brand {
