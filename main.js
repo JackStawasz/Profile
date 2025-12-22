@@ -21,10 +21,21 @@ function initCustomCursor() {
     cursor.style.left = mouseX + 'px';
     cursor.style.top = mouseY + 'px';
     cursor.classList.add('active');
+    
+    // Check if hovering over clickable element
+    const target = e.target;
+    const isClickable = target.closest('a, button, input, select, .project-card, .category-bookmark, .carousel-btn, .indicator-dot, [role="button"]');
+    
+    if (isClickable) {
+      cursor.classList.add('hovering');
+    } else {
+      cursor.classList.remove('hovering');
+    }
   });
   
   document.addEventListener('mouseleave', () => {
     cursor.classList.remove('active');
+    cursor.classList.remove('hovering');
   });
   
   document.addEventListener('mouseenter', () => {
