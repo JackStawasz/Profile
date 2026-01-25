@@ -1,0 +1,156 @@
+{
+  "William & Mary": [
+    {
+      "number": "PHYS 201",
+      "title": "Modern Physics",
+      "discipline": "Physics",
+      "semester": "Fall 2023"
+    },
+    {
+      "number": "PHYS 251",
+      "title": "Experimental Atomic Lab",
+      "discipline": "Physics",
+      "semester": "Fall 2024"
+    },
+    {
+      "number": "PHYS 252",
+      "title": "Electronics Lab",
+      "discipline": "Physics",
+      "semester": "Spring 2025"
+    },
+    {
+      "number": "PHYS 254",
+      "title": "Mathematical Physics",
+      "discipline": "Physics",
+      "semester": "Spring 2024"
+    },
+    {
+      "number": "PHYS 208",
+      "title": "Classical Mechanics I",
+      "discipline": "Physics",
+      "semester": "Spring 2024"
+    },
+    {
+      "number": "PHYS 303",
+      "title": "Classical Mechanics II",
+      "discipline": "Physics",
+      "semester": "Fall 2025"
+    },
+    {
+      "number": "PHYS 403",
+      "title": "Thermodynamics &Statistical Mechanics",
+      "discipline": "Physics",
+      "semester": "Fall 2025"
+    },
+    {
+      "number": "CSCI 241",
+      "title": "Data Structures",
+      "discipline": "Computer Science",
+      "semester": "Fall 2023"
+    },
+    {
+      "number": "CSCI 243",
+      "title": "Discrete Structures",
+      "discipline": "Computer Science",
+      "semester": "Spring 2024"
+    },
+    {
+      "number": "CSCI 301",
+      "title": "Software Engineering",
+      "discipline": "Computer Science",
+      "semester": "Spring 2025"
+    },
+    {
+      "number": "CSCI 303",
+      "title": "Algorithms",
+      "discipline": "Computer Science",
+      "semester": "Fall 2024"
+    },
+    {
+      "number": "CSCI 304",
+      "title": "Computer Organization",
+      "discipline": "Computer Science",
+      "semester": "Fall 2025"
+    },
+    {
+      "number": "CSCI 312",
+      "title": "Programming Languages",
+      "discipline": "Computer Science",
+      "semester": "Spring 2025"
+    },
+    {
+      "number": "CSCI 416",
+      "title": "Fundamentals of AI/ML",
+      "discipline": "Computer Science",
+      "semester": "Fall 2025"
+    },
+    {
+      "number": "CSCI 420",
+      "title": "Quantum Computing",
+      "discipline": "Computer Science",
+      "semester": "Fall 2025"
+    },
+    {
+      "number": "MATH 150",
+      "title": "Data Driven Decision Making",
+      "discipline": "Mathematics",
+      "semester": "Spring 2024"
+    },
+    {
+      "number": "PHYS 313",
+      "title": "Quantum Mechanics I",
+      "discipline": "Physics",
+      "semester": "Fall 2024"
+    },
+    {
+      "number": "PHYS 314",
+      "title": "Quantum Mechanics II",
+      "discipline": "Physics",
+      "semester": "Spring 2025"
+    }
+  ],
+  "Pre-Matriculation": [
+    {
+      "number": "CSCI 141",
+      "title": "Computational Problem Solving",
+      "discipline": "Computer Science",
+      "semester": "Summer 2023"
+    },
+    {
+      "number": "PHYS 101",
+      "title": "General Physics I",
+      "discipline": "Physics",
+      "semester": "2021-2022"
+    },
+    {
+      "number": "PHYS 102",
+      "title": "General Physics II",
+      "discipline": "Physics",
+      "semester": "2022-2023"
+    },
+    {
+      "number": "MATH 111",
+      "title": "Calculus I",
+      "discipline": "Mathematics",
+      "semester": "Fall 2021"
+    },
+    {
+      "number": "MATH 112",
+      "title": "Calculus II",
+      "discipline": "Mathematics",
+      "semester": "Spring 2022"
+    },
+    {
+      "number": "MATH 211",
+      "title": "Linear Algebra",
+      "discipline": "Mathematics",
+      "semester": "Spring 2023"
+    },
+    {
+      "number": "MATH 212",
+      "title": "Multivariable Calculus",
+      "discipline": "Mathematics",
+      "semester": "Fall 2022"
+    }
+  ]
+}
