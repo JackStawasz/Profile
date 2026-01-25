@@ -45,7 +45,6 @@ function initCustomCursor() {
   document.addEventListener('mousedown', (e) => {
     cursor.classList.add('clicking');
     createRipple(e.clientX, e.clientY);
-    createDistortion(e.clientX, e.clientY);
   });
   
   document.addEventListener('mouseup', () => {
@@ -72,26 +71,25 @@ function createDistortion(x, y) {
   
   const ctx = canvas.getContext('2d');
   let frame = 0;
-  const maxFrames = 30;
+  const maxFrames = 20;
   
-  canvas.style.opacity = '0.6';
+  canvas.style.opacity = '0.3';
   
   function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     const progress = frame / maxFrames;
-    const radius = 150 * progress;
-    const strength = (1 - progress) * 30;
+    const radius = 60 * progress;
+    const strength = (1 - progress) * 8;
     
-    for (let angle = 0; angle < Math.PI * 2; angle += 0.1) {
-      const distance = radius + Math.sin(angle * 8 + frame * 0.5) * strength * 0.3;
-      const px = x + Math.cos(angle) * distance;
-      const py = y + Math.sin(angle) * distance;
+    for (let angle = 0; angle < Math.PI * 2; angle += 0.2) {
+      const waveOffset = Math.sin(angle * 8 + frame * 0.5) * strength * 0.2;
+      const distance = Math.max(0, radius + waveOffset);
       
-      ctx.strokeStyle = `rgba(125, 211, 252, ${(1 - progress) * 0.3})`;
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = `rgba(125, 211, 252, ${(1 - progress) * 0.2})`;
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(x, y, distance, angle, angle + 0.1);
+      ctx.arc(x, y, distance, angle, angle + 0.2);
       ctx.stroke();
     }
     
@@ -134,6 +132,7 @@ async function showSection(target) {
   if (sectionId === 'home') setTimeout(() => initHome(), 0);
   if (sectionId === 'projects') setTimeout(() => initProjects(), 0);
   if (sectionId === 'contact') setTimeout(() => initContacts(), 0);
+  if (sectionId === 'education') setTimeout(() => initEducation(), 0);
 }
 
 links.forEach(link => {
