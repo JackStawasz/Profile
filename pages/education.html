@@ -1,0 +1,61 @@
+<header>
+    <div class="header-left">
+        <div class="header-text">
+            <h1>My Education</h1>
+            <div class="muted">Fetched from <code>education.json</code></div>
+        </div>
+        <svg class="education-logo">
+            <use href="#logo"></use>
+        </svg>
+    </div>
+    <div class="controls">
+        <div class="sort-controls">
+            <div class="sort-label">
+                Sort Priority (drag to reorder):
+                <button id="reverse-sort" class="reverse-btn" title="Reverse sort order">⇅</button>
+            </div>
+            <div id="sort-chips" class="sort-chips">
+                <div class="sort-chip" draggable="true" data-sort="organization">
+                    <span class="drag-handle">⠿</span>
+                    <span>Organization</span>
+                </div>
+                <div class="sort-chip" draggable="true" data-sort="department">
+                    <span class="drag-handle">⠿</span>
+                    <span>Department</span>
+                </div>
+                <div class="sort-chip" draggable="true" data-sort="number">
+                    <span class="drag-handle">⠿</span>
+                    <span>Course Number</span>
+                </div>
+                <div class="sort-chip" draggable="true" data-sort="semester">
+                    <span class="drag-handle">⠿</span>
+                    <span>Semester</span>
+                </div>
+            </div>
+        </div>
+        <div class="filter-controls">
+            <button id="filter-toggle" class="search filter-toggle" type="button">
+                Filter Courses
+                <span class="filter-count" id="filter-count" hidden></span>
+            </button>
+            <div id="filter-dropdown" class="filter-dropdown" hidden>
+                <div class="filter-section">
+                    <div class="filter-section-title">Organizations</div>
+                    <div id="org-filters" class="filter-options"></div>
+                </div>
+                <div class="filter-section">
+                    <div class="filter-section-title">Disciplines</div>
+                    <div id="discipline-filters" class="filter-options"></div>
+                </div>
+                <div class="filter-actions">
+                    <button id="clear-filters" class="filter-action-btn">Clear All</button>
+                    <button id="apply-filters" class="filter-action-btn primary">Apply</button>
+                </div>
+            </div>
+        </div>
+        <input class="search" id="q" placeholder="Search Courses" aria-label="Search courses" />
+    </div>
+</header>
+
+<div id="status" class="loading" role="status">Loading courses…</div>
+<div id="education-content" hidden></div>
