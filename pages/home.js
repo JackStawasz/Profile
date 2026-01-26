@@ -580,7 +580,7 @@ function initSkillsCarousel() {
       
       // Generate image path from skill name
       const imageName = skill.name.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_');
-      const imagePath = `../data/skills/${imageName}.png`;
+      const imagePath = `data/skills/${imageName}.png`;
       
       slide.innerHTML = `
         <img src="${imagePath}" alt="${skill.name}" class="skill-image" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
