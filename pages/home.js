@@ -3,7 +3,7 @@ let skillsData = null;
 
 async function loadSkillsData() {
   try {
-    const response = await fetch('../data/skills/skills.json');
+    const response = await fetch('data/skills/skills.json');
     if (!response.ok) throw new Error('Failed to load skills data');
     skillsData = await response.json();
     console.log('Skills data loaded successfully:', Object.keys(skillsData));
