@@ -9,51 +9,83 @@
         </svg>
     </div>
     <div class="controls">
-        <div class="sort-controls">
-            <div class="sort-label">
-                Sort Priority (drag to reorder):
-                <button id="reverse-sort" class="reverse-btn" title="Reverse sort order">⇅</button>
-            </div>
-            <div id="sort-chips" class="sort-chips">
-                <div class="sort-chip" draggable="true" data-sort="organization">
-                    <span class="drag-handle">⠿</span>
-                    <span>Organization</span>
-                </div>
-                <div class="sort-chip" draggable="true" data-sort="department">
-                    <span class="drag-handle">⠿</span>
-                    <span>Department</span>
-                </div>
-                <div class="sort-chip" draggable="true" data-sort="number">
-                    <span class="drag-handle">⠿</span>
-                    <span>Course Number</span>
-                </div>
-                <div class="sort-chip" draggable="true" data-sort="semester">
-                    <span class="drag-handle">⠿</span>
-                    <span>Semester</span>
-                </div>
-            </div>
-        </div>
-        <div class="filter-controls">
-            <button id="filter-toggle" class="search filter-toggle" type="button">
-                Filter Courses
-                <span class="filter-count" id="filter-count" hidden></span>
-            </button>
-            <div id="filter-dropdown" class="filter-dropdown" hidden>
-                <div class="filter-section">
-                    <div class="filter-section-title">Organizations</div>
-                    <div id="org-filters" class="filter-options"></div>
-                </div>
-                <div class="filter-section">
-                    <div class="filter-section-title">Disciplines</div>
-                    <div id="discipline-filters" class="filter-options"></div>
-                </div>
-                <div class="filter-actions">
-                    <button id="clear-filters" class="filter-action-btn">Clear All</button>
-                    <button id="apply-filters" class="filter-action-btn primary">Apply</button>
-                </div>
-            </div>
-        </div>
         <input class="search" id="q" placeholder="Search Courses" aria-label="Search courses" />
+        <div class="control-buttons">
+            <div class="view-controls">
+                <button id="view-toggle" class="control-btn" type="button" title="View">
+                    👁
+                </button>
+                <div id="view-dropdown" class="view-dropdown" hidden>
+                    <div class="view-section">
+                        <div class="view-section-title">Display Mode</div>
+                        <div class="view-options">
+                            <label class="view-option">
+                                <input type="radio" name="view-mode" value="card" checked />
+                                <span>Card View</span>
+                            </label>
+                            <label class="view-option">
+                                <input type="radio" name="view-mode" value="list" />
+                                <span>List View</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="sort-controls">
+                <button id="sort-toggle" class="control-btn" type="button" title="Sort">
+                    ≡↑
+                </button>
+                <div id="sort-dropdown" class="sort-dropdown" hidden>
+                    <div class="sort-section">
+                        <div class="sort-section-title">
+                            Sort Priority (drag to reorder)
+                            <button id="reverse-sort" class="reverse-btn" title="Reverse sort order">⇅</button>
+                        </div>
+                        <div id="sort-chips" class="sort-chips-vertical">
+                            <div class="sort-chip" draggable="true" data-sort="organization">
+                                <span class="drag-handle">⠿</span>
+                                <span>Organization</span>
+                            </div>
+                            <div class="sort-chip" draggable="true" data-sort="number">
+                                <span class="drag-handle">⠿</span>
+                                <span>Course Number</span>
+                            </div>
+                            <div class="sort-chip" draggable="true" data-sort="department">
+                                <span class="drag-handle">⠿</span>
+                                <span>Department</span>
+                            </div>
+                            <div class="sort-chip" draggable="true" data-sort="semester">
+                                <span class="drag-handle">⠿</span>
+                                <span>Semester</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-controls">
+                <button id="filter-toggle" class="control-btn" type="button" title="Filter">
+                    <svg width="20" height="16" viewBox="0 0 20 16" fill="none" style="display: block;">
+                        <rect width="20" height="2" rx="1" fill="currentColor"/>
+                        <rect y="7" width="14" height="2" rx="1" fill="currentColor"/>
+                        <rect y="14" width="8" height="2" rx="1" fill="currentColor"/>
+                    </svg>
+                </button>
+                <div id="filter-dropdown" class="filter-dropdown" hidden>
+                    <div class="filter-section">
+                        <div class="filter-section-title">Organizations</div>
+                        <div id="org-filters" class="filter-options"></div>
+                    </div>
+                    <div class="filter-section">
+                        <div class="filter-section-title">Disciplines</div>
+                        <div id="discipline-filters" class="filter-options"></div>
+                    </div>
+                    <div class="filter-actions">
+                        <button id="clear-filters" class="filter-action-btn">Clear All</button>
+                        <button id="apply-filters" class="filter-action-btn primary">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 

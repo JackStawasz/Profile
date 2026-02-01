@@ -3,8 +3,9 @@ const EDUCATION_JSON_PATH = './data/education.json';
 let allCourses = [];
 let allDisciplines = new Set();
 let allOrganizations = new Set();
-let sortOrder = ['organization', 'department', 'number', 'semester'];
+let sortOrder = ['organization', 'number', 'department', 'semester'];
 let reverseSort = false;
+let viewMode = 'card';
 let selectedFilters = {
   organizations: new Set(),
   disciplines: new Set()
@@ -14,12 +15,14 @@ function initEducation() {
   const statusEl = document.getElementById('status');
   const contentEl = document.getElementById('education-content');
   const qEl = document.getElementById('q');
+  const sortToggle = document.getElementById('sort-toggle');
+  const sortDropdown = document.getElementById('sort-dropdown');
+  const viewToggle = document.getElementById('view-toggle');
+  const viewDropdown = document.getElementById('view-dropdown');
   const filterToggle = document.getElementById('filter-toggle');
   const filterDropdown = document.getElementById('filter-dropdown');
-  const filterCount = document.getElementById('filter-count');
   const clearFiltersBtn = document.getElementById('clear-filters');
   const applyFiltersBtn = document.getElementById('apply-filters');
-  const reverseSortBtn = document.getElementById('reverse-sort');
 
   function showStatus(message, type = 'loading', showRetry = false) {
     statusEl.className = type;
@@ -79,11 +82,13 @@ function initEducation() {
       // Populate filter options
       populateFilterOptions();
       
-      // Initialize drag and drop for sort chips
-      initSortDragAndDrop();
-      
       // Render with current sort order
       updateDisplay();
+      
+      // Initialize drag and drop for sort chips after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        initSortDragAndDrop();
+      }, 100);
     } catch (err) {
       console.error(err);
       showStatus('Failed to load courses. ' + err.message, 'error', true);
@@ -131,45 +136,151 @@ function initEducation() {
   }
 
   function initSortDragAndDrop() {
-    const chips = document.querySelectorAll('.sort-chip');
-    
-    chips.forEach(chip => {
-      chip.addEventListener('dragstart', handleDragStart);
-      chip.addEventListener('dragend', handleDragEnd);
-      chip.addEventListener('dragover', handleDragOver);
-      chip.addEventListener('drop', handleDrop);
-      chip.addEventListener('dragenter', handleDragEnter);
-      chip.addEventListener('dragleave', handleDragLeave);
+    const container = document.getElementById('sort-chips');
+    if (!container) return;
+
+    let draggedChip = null;
+
+    container.addEventListener('dragstart', e => {
+      const chip = e.target.closest('.sort-chip');
+      if (!chip) return;
+
+      draggedChip = chip;
+      chip.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    container.addEventListener('dragend', () => {
+      if (draggedChip) {
+        draggedChip.classList.remove('dragging');
+        draggedChip = null;
+      }
+    });
+
+    container.addEventListener('dragover', e => {
+      e.preventDefault();
+      const chip = e.target.closest('.sort-chip');
+      if (!chip || chip === draggedChip) return;
+      chip.classList.add('drag-over');
+    });
+
+    container.addEventListener('dragleave', e => {
+      const chip = e.target.closest('.sort-chip');
+      if (!chip) return;
+      chip.classList.remove('drag-over');
+    });
+
+    container.addEventListener('drop', e => {
+      e.preventDefault();
+      const targetChip = e.target.closest('.sort-chip');
+      if (!targetChip || targetChip === draggedChip) return;
+
+      targetChip.classList.remove('drag-over');
+
+      const container = targetChip.parentNode;
+      const draggedIndex = [...container.children].indexOf(draggedChip);
+      const targetIndex = [...container.children].indexOf(targetChip);
+
+      if (draggedIndex < targetIndex) {
+        container.insertBefore(draggedChip, targetChip.nextSibling);
+      } else {
+        container.insertBefore(draggedChip, targetChip);
+      }
+
+      updateSortOrderFromChips();
     });
   }
-
   let draggedElement = null;
+  let placeholder = null;
 
   function handleDragStart(e) {
     draggedElement = this;
     this.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/html', this.innerHTML);
+    
+    // Create placeholder
+    placeholder = document.createElement('div');
+    placeholder.className = 'sort-chip-placeholder';
+    placeholder.innerHTML = this.innerHTML;
+    
+    // Insert placeholder at original position
+    this.parentNode.insertBefore(placeholder, this);
+    
+    // Hide the original element
+    this.style.visibility = 'hidden';
   }
 
   function handleDragEnd(e) {
     this.classList.remove('dragging');
+    this.style.visibility = 'visible';
+    
     document.querySelectorAll('.sort-chip').forEach(chip => {
       chip.classList.remove('drag-over');
     });
+    
+    // Remove placeholder
+    if (placeholder && placeholder.parentNode) {
+      placeholder.parentNode.removeChild(placeholder);
+    }
+    placeholder = null;
   }
 
   function handleDragOver(e) {
     if (e.preventDefault) {
       e.preventDefault();
     }
+    if (e.stopPropagation) {
+      e.stopPropagation();
+    }
     e.dataTransfer.dropEffect = 'move';
+    
+    // Insert placeholder at hover position
+    if (placeholder && draggedElement && this !== placeholder && this.classList.contains('sort-chip')) {
+      const container = document.getElementById('sort-chips');
+      if (!container) return false;
+      
+      const allChips = Array.from(container.querySelectorAll('.sort-chip'));
+      const targetIndex = allChips.indexOf(this);
+      
+      if (targetIndex !== -1) {
+        // Find where placeholder currently is
+        const placeholderIndex = Array.from(container.children).indexOf(placeholder);
+        
+        if (placeholderIndex !== targetIndex) {
+          // Insert placeholder before or after target
+          const rect = this.getBoundingClientRect();
+          const midpoint = rect.top + rect.height / 2;
+          
+          if (e.clientY < midpoint) {
+            container.insertBefore(placeholder, this);
+          } else {
+            container.insertBefore(placeholder, this.nextSibling);
+          }
+        }
+      }
+    }
+    
     return false;
   }
 
   function handleDragEnter(e) {
-    if (this !== draggedElement) {
+    if (this !== draggedElement && this !== placeholder) {
       this.classList.add('drag-over');
+      
+      // Insert placeholder
+      if (placeholder) {
+        const container = this.parentNode;
+        const allChips = Array.from(container.children);
+        const draggedIndex = allChips.indexOf(draggedElement);
+        const targetIndex = allChips.indexOf(this);
+        
+        if (draggedIndex < targetIndex) {
+          container.insertBefore(placeholder, this.nextSibling);
+        } else {
+          container.insertBefore(placeholder, this);
+        }
+      }
     }
   }
 
@@ -184,26 +295,27 @@ function initEducation() {
 
     if (draggedElement !== this) {
       const container = this.parentNode;
-      const allChips = Array.from(container.children);
-      const draggedIndex = allChips.indexOf(draggedElement);
-      const targetIndex = allChips.indexOf(this);
-
-      if (draggedIndex < targetIndex) {
-        container.insertBefore(draggedElement, this.nextSibling);
-      } else {
-        container.insertBefore(draggedElement, this);
+      
+      // Replace placeholder with dragged element
+      if (placeholder && placeholder.parentNode) {
+        container.replaceChild(draggedElement, placeholder);
+        draggedElement.style.visibility = 'visible';
       }
 
-      // Update sort order
+      // Update sort order based on new DOM order
       updateSortOrder();
       updateDisplay();
+    } else {
+      // Just restore visibility if dropped on itself
+      draggedElement.style.visibility = 'visible';
     }
 
     return false;
   }
 
   function updateSortOrder() {
-    const chips = document.querySelectorAll('.sort-chip');
+    const container = document.getElementById('sort-chips');
+    const chips = container.querySelectorAll('.sort-chip');
     sortOrder = Array.from(chips).map(chip => chip.dataset.sort);
   }
 
@@ -216,6 +328,13 @@ function initEducation() {
     }
     
     clearStatus();
+
+    // Update content class based on view mode
+    if (viewMode === 'list') {
+      contentEl.classList.add('list-view');
+    } else {
+      contentEl.classList.remove('list-view');
+    }
 
     // Sort courses based on current sort order
     let sortedCourses = [...allCourses];
@@ -243,8 +362,34 @@ function initEducation() {
       return 0;
     });
 
-    // Render all courses
-    sortedCourses.forEach(course => {
+    // Render based on view mode
+    if (viewMode === 'list') {
+      renderListView(sortedCourses);
+    } else {
+      renderCardView(sortedCourses);
+    }
+  }
+
+  function renderListView(courses) {
+    courses.forEach(course => {
+      if (!course.title) return;
+
+      const item = document.createElement('div');
+      item.className = 'course-list-item';
+      item.setAttribute('data-discipline', course.discipline || '');
+      item.setAttribute('data-title', (course.title || '').toLowerCase());
+      item.setAttribute('data-number', (course.number || '').toLowerCase());
+      item.setAttribute('data-institution', course.institution || '');
+
+      const number = course.number ? `<span class="course-list-number">${course.number}</span>` : '';
+      item.innerHTML = `${number}${course.title}`;
+
+      contentEl.appendChild(item);
+    });
+  }
+
+  function renderCardView(courses) {
+    courses.forEach(course => {
       if (!course.title) return;
 
       const card = document.createElement('article');
@@ -264,6 +409,7 @@ function initEducation() {
       // Thumbnail (left side)
       const thumb = document.createElement('div');
       thumb.className = 'course-thumb';
+      thumb.setAttribute('data-discipline', course.discipline || '');
       if (course.image) {
         thumb.style.background = `url(${course.image}) center/cover`;
         thumb.textContent = '';
@@ -282,7 +428,7 @@ function initEducation() {
       header.className = 'course-header';
 
       if (course.number) {
-        const number = document.createElement('div');
+        const number = document.createElement('span');
         number.className = 'course-number';
         number.textContent = course.number;
         header.appendChild(number);
@@ -365,7 +511,7 @@ function initEducation() {
 
   function extractCourseNumber(courseNumber) {
     if (!courseNumber) return 0;
-    // Extract numeric portion (e.g., "PHYS 313" -> 313, "CS101" -> 101)
+    // Extract numeric portion only (e.g., "PHYS 313" -> 313, "CS101" -> 101, "MATH 420" -> 420)
     const match = courseNumber.match(/(\d+)/);
     return match ? parseInt(match[1]) : 0;
   }
@@ -423,14 +569,17 @@ function initEducation() {
   function filterCourses() {
     const query = (qEl.value || '').trim().toLowerCase();
     
-    const cards = contentEl.querySelectorAll('.course-card');
+    const items = viewMode === 'list' 
+      ? contentEl.querySelectorAll('.course-list-item')
+      : contentEl.querySelectorAll('.course-card');
+    
     let visibleCount = 0;
     
-    cards.forEach(card => {
-      const title = card.getAttribute('data-title');
-      const number = card.getAttribute('data-number');
-      const discipline = card.getAttribute('data-discipline');
-      const institution = card.getAttribute('data-institution');
+    items.forEach(item => {
+      const title = item.getAttribute('data-title');
+      const number = item.getAttribute('data-number');
+      const discipline = item.getAttribute('data-discipline');
+      const institution = item.getAttribute('data-institution');
       
       const matchesQuery = !query || 
         title.includes(query) || 
@@ -445,16 +594,16 @@ function initEducation() {
         selectedFilters.disciplines.has(discipline);
       
       if (matchesQuery && matchesOrgFilter && matchesDiscFilter) {
-        card.style.display = '';
+        item.style.display = '';
         visibleCount++;
       } else {
-        card.style.display = 'none';
+        item.style.display = 'none';
       }
     });
     
-    if (visibleCount === 0 && contentEl.children.length > 0) {
+    if (visibleCount === 0 && allCourses.length > 0) {
       showStatus('No courses found matching your filters.', 'empty', false);
-    } else if (contentEl.children.length > 0) {
+    } else if (allCourses.length > 0) {
       clearStatus();
     }
   }
@@ -462,32 +611,63 @@ function initEducation() {
   function updateDisplay() {
     renderEducation();
     filterCourses();
-    updateFilterCount();
-  }
-
-  function updateFilterCount() {
-    const totalFilters = selectedFilters.organizations.size + selectedFilters.disciplines.size;
-    if (totalFilters > 0) {
-      filterCount.textContent = totalFilters;
-      filterCount.hidden = false;
-    } else {
-      filterCount.hidden = true;
-    }
   }
 
   // Event listeners
+  const reverseSortBtn = document.getElementById('reverse-sort');
+  
   reverseSortBtn.addEventListener('click', () => {
     reverseSort = !reverseSort;
     reverseSortBtn.classList.toggle('active', reverseSort);
     updateDisplay();
   });
 
+  viewToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    viewDropdown.hidden = !viewDropdown.hidden;
+    // Close other dropdowns when opening view
+    if (!viewDropdown.hidden) {
+      sortDropdown.hidden = true;
+      filterDropdown.hidden = true;
+    }
+  });
+
+  // Handle view mode changes
+  document.querySelectorAll('input[name="view-mode"]').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      viewMode = e.target.value;
+      viewDropdown.hidden = true;
+      updateDisplay();
+    });
+  });
+
+  sortToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sortDropdown.hidden = !sortDropdown.hidden;
+    // Close filter dropdown when opening sort
+    if (!sortDropdown.hidden) {
+      viewDropdown.hidden = true;
+      filterDropdown.hidden = true;
+    }
+  });
+
   filterToggle.addEventListener('click', (e) => {
     e.stopPropagation();
     filterDropdown.hidden = !filterDropdown.hidden;
+    // Close sort dropdown when opening filter
+    if (!filterDropdown.hidden) {
+      viewDropdown.hidden = true;
+      sortDropdown.hidden = true;
+    }
   });
 
   document.addEventListener('click', (e) => {
+    if (!sortToggle.contains(e.target) && !sortDropdown.contains(e.target)) {
+      sortDropdown.hidden = true;
+    }
+    if (!viewToggle.contains(e.target) && !viewDropdown.contains(e.target)) {
+      viewDropdown.hidden = true;
+    }
     if (!filterToggle.contains(e.target) && !filterDropdown.contains(e.target)) {
       filterDropdown.hidden = true;
     }
