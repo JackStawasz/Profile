@@ -132,7 +132,13 @@ async function showSection(target) {
   if (sectionId === 'home') setTimeout(() => initHome(), 0);
   if (sectionId === 'projects') setTimeout(() => initProjects(), 0);
   if (sectionId === 'contact') setTimeout(() => initContacts(), 0);
-  if (sectionId === 'education') setTimeout(() => initEducation(), 0);
+  if (sectionId === 'education') {
+    setTimeout(() => {
+      if (typeof initEducation === 'function') {
+        initEducation();
+      }
+    }, 0);
+  }
 }
 
 links.forEach(link => {
