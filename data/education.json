@@ -4,109 +4,162 @@
       "number": "PHYS 201",
       "title": "Modern Physics",
       "discipline": "Physics",
-      "semester": "Fall 2023"
+      "semester": "Fall 2023",
+      "description": "20th-century physics: introduction to relativity, quantum, and wave-particle duality theories."
     },
     {
       "number": "PHYS 251",
       "title": "Experimental Atomic Lab",
       "discipline": "Physics",
-      "semester": "Fall 2024"
+      "semester": "Fall 2024",
+      "description": "Experiments in atomic spectroscopy, interferometry, and blackbody radiation."
     },
     {
       "number": "PHYS 252",
       "title": "Electronics Lab",
       "discipline": "Physics",
-      "semester": "Spring 2025"
+      "semester": "Spring 2025",
+      "description": "Circuit theory, design, simulation, debugging, and application using passive and active components."
     },
     {
       "number": "PHYS 254",
       "title": "Mathematical Physics",
       "discipline": "Physics",
-      "semester": "Spring 2024"
+      "semester": "Spring 2024",
+      "description": "Complex analysis, series solutions of differential equations, and partial differential equations."
     },
     {
       "number": "PHYS 208",
       "title": "Classical Mechanics I",
       "discipline": "Physics",
-      "semester": "Spring 2024"
+      "semester": "Spring 2024",
+      "description": "The simple harmonic oscillator, coupled oscillations and normal modes, variational methods, Lagrangian and Hamiltonian mechanics, central forces."
     },
     {
       "number": "PHYS 303",
       "title": "Classical Mechanics II",
       "discipline": "Physics",
-      "semester": "Fall 2025"
+      "semester": "Fall 2025",
+      "description": "Scattering, rigid body rotation, inertia tensor, noninertial frames, continuum mechanics, special relativity, nonlinear dynamics and chaos."
+    },
+    {
+      "number": "PHYS 352",
+      "title": "Experimental Modern Physics",
+      "discipline": "Physics",
+      "semester": "Spring 2026",
+      "description": "Experiments in atomic, nuclear, solid state and elementary particle physics."
+    },
+    {
+      "number": "PHYS 401",
+      "title": "Electricity & Magnetism I",
+      "discipline": "Physics",
+      "semester": "Spring 2026",
+      "description": "Development of the theory of electricity and magnetism including electrostatics, magnetostatics and Maxwell’s equations."
+    },
+    {
+      "number": "CSCI 423",
+      "title": "Finite Automata",
+      "discipline": "Computer Science",
+      "semester": "Spring 2026",
+      "description": "Theory of sequential machines, finite automata, Turing machines, recursive functions, computability of functions."
+    },
+    {
+      "number": "CSCI 455",
+      "title": "GenAI for Software Development",
+      "discipline": "Computer Science",
+      "semester": "Spring 2026",
+      "description": "Using generative AI and deep learning to enhance and automate modern software development."
+    },
+    {
+      "number": "MATH 302",
+      "title":	"Ordinary Differential Equations",
+      "discipline": "Mathematics",
+      "semester": "Spring 2026",
+      "description": "Solving differential equations using numerical methods, bifurcations, and qualitative analysis."
     },
     {
       "number": "PHYS 403",
       "title": "Thermodynamics & Statistical Mechanics",
       "discipline": "Physics",
-      "semester": "Fall 2025"
+      "semester": "Fall 2025",
+      "description": "Quantum and thermal statistical mechanics applied to gases, solids, and radiation."
     },
     {
       "number": "CSCI 241",
       "title": "Data Structures",
       "discipline": "Computer Science",
-      "semester": "Fall 2023"
+      "semester": "Fall 2023",
+      "description": "Stack, queue, linked list, tree, graph structures."
     },
     {
       "number": "CSCI 243",
       "title": "Discrete Structures",
       "discipline": "Computer Science",
-      "semester": "Spring 2024"
+      "semester": "Spring 2024",
+      "description": "Sets, functions, boolean algebra, first order predicate calculus, trees, graphs and discrete probability."
     },
     {
       "number": "CSCI 301",
       "title": "Software Engineering",
       "discipline": "Computer Science",
-      "semester": "Spring 2025"
+      "semester": "Spring 2025",
+      "description": "Object-oriented class implementation, abstraction techniques, defensive programming, and testing."
     },
     {
       "number": "CSCI 303",
       "title": "Algorithms",
       "discipline": "Computer Science",
-      "semester": "Fall 2024"
+      "semester": "Fall 2024",
+      "description": "Algorithm design, complexity analysis, and NP-complete problems such as sorting and hashing."
     },
     {
       "number": "CSCI 304",
       "title": "Computer Organization",
       "discipline": "Computer Science",
-      "semester": "Fall 2025"
+      "semester": "Fall 2025",
+      "description": "Assembly instructions, binary formatting, and hardware layouts."
     },
     {
       "number": "CSCI 312",
       "title": "Programming Languages",
       "discipline": "Computer Science",
-      "semester": "Spring 2025"
+      "semester": "Spring 2025",
+      "description": "Programming paradigms and syntax for memory management, parameter passing, and event handling"
     },
     {
       "number": "CSCI 416",
       "title": "Fundamentals of AI/ML",
       "discipline": "Computer Science",
-      "semester": "Fall 2025"
+      "semester": "Fall 2025",
+      "description": "Core artificial intelligence and machine learning algorithms and their use cases."
     },
     {
       "number": "CSCI 420",
       "title": "Quantum Computing",
       "discipline": "Computer Science",
-      "semester": "Fall 2025"
+      "semester": "Fall 2025",
+      "description": "Qubit superposition, algorithms, and quantum protocols for computing and fault tolerance."
     },
     {
       "number": "MATH 150",
       "title": "Data Driven Decision Making",
       "discipline": "Mathematics",
-      "semester": "Spring 2024"
+      "semester": "Spring 2024",
+      "description": "Data analysis, visualization, and statistical inference in R."
     },
     {
       "number": "PHYS 313",
       "title": "Quantum Mechanics I",
       "discipline": "Physics",
-      "semester": "Fall 2024"
+      "semester": "Fall 2024",
+      "description": "Non-relativistic solutions of the Schrodinger equation in one and three dimensions, symmetry, identical particles."
     },
     {
       "number": "PHYS 314",
       "title": "Quantum Mechanics II",
       "discipline": "Physics",
-      "semester": "Spring 2025"
+      "semester": "Spring 2025",
+      "description": "Perturbation theory, approximate methods, and applications of quantum mechanics for atomic, solid state and nuclear physics."
     }
   ],
   "Pre-Matriculation": [
@@ -114,43 +167,50 @@
       "number": "CSCI 141",
       "title": "Computational Problem Solving",
       "discipline": "Computer Science",
-      "semester": "Summer 2023"
+      "semester": "Summer 2023",
+      "description": "Introductory Python: variables, control structures, functions, and classes."
     },
     {
       "number": "PHYS 101",
       "title": "General Physics I",
       "discipline": "Physics",
-      "semester": "2021-2022"
+      "semester": "2021-2022",
+      "description": "Mechanics, kinematics, forces, energy, and momentum."
     },
     {
       "number": "PHYS 102",
       "title": "General Physics II",
       "discipline": "Physics",
-      "semester": "2022-2023"
+      "semester": "2022-2023",
+      "description": "Electricity, magnetism, circuits, waves, and optics."
     },
     {
       "number": "MATH 111",
       "title": "Calculus I",
       "discipline": "Mathematics",
-      "semester": "Fall 2021"
+      "semester": "Fall 2021",
+      "description": "Limits, derivatives, integrals, and optimization applications."
     },
     {
       "number": "MATH 112",
       "title": "Calculus II",
       "discipline": "Mathematics",
-      "semester": "Spring 2022"
+      "semester": "Spring 2022",
+      "description": "Advanced integration techniques and infinite sequences and series."
     },
     {
       "number": "MATH 211",
       "title": "Linear Algebra",
       "discipline": "Mathematics",
-      "semester": "Spring 2023"
+      "semester": "Spring 2023",
+      "description": "Vector spaces, matrices, eigenvalues, and linear transformations."
     },
     {
       "number": "MATH 212",
       "title": "Multivariable Calculus",
       "discipline": "Mathematics",
-      "semester": "Fall 2022"
+      "semester": "Fall 2022",
+      "description": "Multi-parametered functions, partial derivatives, and vector calculus."
     }
   ]
 }
