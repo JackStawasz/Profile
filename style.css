@@ -8,6 +8,102 @@
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
+/* Global Tooltip Styles */
+*[title]:not([title=""]):not(iframe):not(svg) {
+  position: relative;
+}
+
+*[title]:not([title=""]):not(iframe):not(svg):hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  background: rgba(20, 20, 20, 0.95);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  animation: tooltip-fade-in 0.2s ease forwards;
+  margin-bottom: 6px;
+}
+
+*[title]:not([title=""]):not(iframe):not(svg):hover::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(20, 20, 20, 0.95) transparent transparent transparent;
+  z-index: 10000;
+  animation: tooltip-fade-in 0.2s ease forwards;
+}
+
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Tooltip positioning variants */
+[data-tooltip-position="bottom"]::after {
+  top: 100%;
+  bottom: auto;
+  transform: translateX(-50%) translateY(8px);
+  margin-top: 6px;
+  margin-bottom: 0;
+}
+
+[data-tooltip-position="bottom"]::before {
+  top: 100%;
+  bottom: auto;
+  transform: translateX(-50%) translateY(2px);
+  border-color: transparent transparent rgba(20, 20, 20, 0.95) transparent;
+}
+
+[data-tooltip-position="left"]::after {
+  right: 100%;
+  left: auto;
+  bottom: 50%;
+  transform: translateX(-8px) translateY(50%);
+  margin-right: 6px;
+  margin-bottom: 0;
+}
+
+[data-tooltip-position="left"]::before {
+  right: 100%;
+  left: auto;
+  bottom: 50%;
+  transform: translateX(-2px) translateY(50%);
+  border-color: transparent transparent transparent rgba(20, 20, 20, 0.95);
+}
+
+[data-tooltip-position="right"]::after {
+  left: 100%;
+  right: auto;
+  bottom: 50%;
+  transform: translateX(8px) translateY(50%);
+  margin-left: 6px;
+  margin-bottom: 0;
+}
+
+[data-tooltip-position="right"]::before {
+  left: 100%;
+  right: auto;
+  bottom: 50%;
+  transform: translateX(2px) translateY(50%);
+  border-color: transparent rgba(20, 20, 20, 0.95) transparent transparent;
+}
+
 * {
   box-sizing: border-box;
 }
