@@ -505,12 +505,11 @@ function initTextRotation() {
 function initSkillsCarousel() {
   const skillsCard = document.querySelector('.skills-card');
   const track = document.getElementById('skillsTrack');
-  const indicators = document.getElementById('carouselIndicators');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const bookmarks = document.querySelectorAll('.category-bookmark');
   
-  if (!track || !indicators || !prevBtn || !nextBtn || !skillsCard) {
+  if (!track || !prevBtn || !nextBtn || !skillsCard) {
     console.error('Carousel elements not found');
     return;
   }
