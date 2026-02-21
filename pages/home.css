@@ -132,7 +132,7 @@
 }
 
 .card h2::after {
-  content: '→';
+  content: 'â†’';
   opacity: 0;
   transform: translateX(-10px);
   transition: all 0.3s ease;
@@ -155,16 +155,18 @@
   padding: 0;
   border-radius: 12px;
   box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-  max-width: 900px;
-  margin: auto;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   border: 2px solid transparent;
   overflow: hidden;
-  position: relative;
 }
 
 .skills-card:hover {
-  transform: translateY(-8px);
   box-shadow: 0 12px 28px rgba(0,0,0,0.4);
   border-color: rgba(125,211,252,0.3);
 }
@@ -224,7 +226,6 @@
   bottom: 0;
   overflow: hidden;
   background: rgba(0,0,0,0.2);
-  border-radius: 12px;
   z-index: 1;
 }
 
@@ -235,9 +236,10 @@
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Skill Slide */
+/* Skill Slide - Responsive widths */
 .skill-slide {
-  width: 100%;
+  /* Mobile: 1 per view (100%) */
+  width: 100vw;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -251,6 +253,20 @@
   box-sizing: border-box;
 }
 
+/* Tablet: 2 per view (50% each) */
+@media (min-width: 768px) {
+  .skill-slide {
+    width: 50vw;
+  }
+}
+
+/* Desktop: 3 per view (33.33% each) */
+@media (min-width: 1200px) {
+  .skill-slide {
+    width: 33.333vw;
+  }
+}
+
 .skill-image {
   position: absolute;
   top: 0;
@@ -260,12 +276,12 @@
   object-fit: cover;
   object-position: center;
   z-index: 0;
-  opacity: 0.3;
+  opacity: 0.5;
   transition: all 0.3s ease;
 }
 
 .skill-slide:hover .skill-image {
-  opacity: 0.4;
+  opacity: 0.65;
   transform: scale(1.05);
 }
 
@@ -320,67 +336,42 @@
 
 /* Carousel Navigation */
 .carousel-nav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
-  justify-content: center;
-  gap: 1rem;
-  padding: 1.5rem 0;
-  margin: 0;
-  position: relative;
-  z-index: 10;
-  background: var(--container);
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  pointer-events: none;
+  z-index: 20;
 }
 
 .carousel-btn {
-  background: rgba(125,211,252,0.1);
-  border: 2px solid rgba(125,211,252,0.2);
+  background: rgba(20, 20, 20, 0.8);
+  border: 2px solid rgba(125,211,252,0.4);
   color: var(--accent);
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
+  pointer-events: all;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
-.carousel-btn:hover:not(:disabled) {
-  background: rgba(125,211,252,0.2);
+.carousel-btn:hover {
+  background: rgba(20, 20, 20, 0.95);
   border-color: var(--accent);
   transform: scale(1.1);
-}
-
-.carousel-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-/* Carousel Indicators */
-.carousel-indicators {
-  display: flex;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0 0 1.5rem 0;
-  margin: 0;
-  position: relative;
-  z-index: 10;
-  background: var(--container);
-}
-
-.indicator-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(125,211,252,0.3);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.indicator-dot.active {
-  background: var(--accent);
-  width: 24px;
-  border-radius: 4px;
+  box-shadow: 0 0 20px rgba(125, 211, 252, 0.4);
 }
 
 /* Carousel wrapper for positioning */

@@ -69,7 +69,7 @@ async function initHome() {
 
     const SAMPLE_COUNT = 600;
     signal = sampleSVG(path, SAMPLE_COUNT);
-    const MAX_TERMS = 1000;
+    const MAX_TERMS = 800;
     const half = Math.floor(MAX_TERMS / 2);
     fourier = dft(signal).filter(f =>
       f.freq <= half || f.freq >= signal.length - half
@@ -85,6 +85,8 @@ async function initHome() {
     controller.resizeTimeout = setTimeout(() => {
       if (controller.isRunning) {
         setupCanvas();
+        // Clear user drawn paths since their coordinates are invalid after resize
+        userDrawnPaths = [];
       }
     }, 250);
   });
@@ -96,7 +98,7 @@ async function initHome() {
   let nextDotId = 0;
 
   function initDots() {
-    const numDots = 20;
+    const numDots = 15;
     for (let i = 0; i < numDots; i++) {
       dots.push(createDot(i * 0.5));
     }
@@ -169,7 +171,7 @@ async function initHome() {
 
   const DURATION = 5;
   const dt = (2 * Math.PI) / (DURATION * 60);
-  const MAX_TRACE_POINTS = 500;
+  const MAX_TRACE_POINTS = 350;
 
   let isSettled = false;
   const SETTLE_TIME = 1;
@@ -546,112 +548,237 @@ function initSkillsCarousel() {
   let currentCategory = 'physics';
   let currentSlide = 0;
   let allSkills = [];
-  let carouselWidth = 0;
+  let slideWidth = 0;
+  let slidesPerView = 1;
+  let isTransitioning = false;
+  
+  // Flatten all skills into one continuous array with category info
+  let flattenedSkills = [];
+  let categoryRanges = {};
+  
+  function buildFlattenedSkills() {
+    flattenedSkills = [];
+    categoryRanges = {};
+    let currentIndex = 0;
+    
+    const categories = ['physics', 'math', 'programming', 'tools'];
+    categories.forEach(cat => {
+      const skills = skillsData[cat];
+      if (skills && Array.isArray(skills)) {
+        categoryRanges[cat] = {
+          start: currentIndex,
+          end: currentIndex + skills.length - 1
+        };
+        skills.forEach(skill => {
+          flattenedSkills.push({
+            ...skill,
+            category: cat
+          });
+        });
+        currentIndex += skills.length;
+      }
+    });
+  }
   
   function updateCarouselWidth() {
-    carouselWidth = newCarouselContainer.offsetWidth;
+    const viewportWidth = window.innerWidth;
+    
+    // Determine slides per view based on viewport
+    if (viewportWidth >= 1200) {
+      slidesPerView = 3;
+    } else if (viewportWidth >= 768) {
+      slidesPerView = 2;
+    } else {
+      slidesPerView = 1;
+    }
+    
+    slideWidth = viewportWidth / slidesPerView;
+  }
+  
+  function createSlide(skill) {
+    const slide = document.createElement('div');
+    slide.className = 'skill-slide';
+    
+    const imageName = skill.name.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_');
+    const imagePath = `data/skills/${imageName}.png`;
+    
+    // Use loading="lazy" for images and simpler fallback
+    slide.innerHTML = `
+      <img src="${imagePath}" alt="${skill.name}" class="skill-image" loading="lazy" onerror="this.remove()">
+      <div class="skill-icon-large">${skill.icon}</div>
+      <div class="skill-name">${skill.icon} ${skill.name}</div>
+      <div class="skill-description">${skill.description}</div>
+    `;
+    return slide;
   }
   
   function renderCarousel(category) {
-    const skills = skillsData[category];
+    if (!flattenedSkills.length) {
+      buildFlattenedSkills();
+    }
     
-    if (!skills || !Array.isArray(skills)) {
-      console.error(`No skills found for category: ${category}`);
-      track.innerHTML = '<div class="skill-slide"><div class="skill-description">No skills found for this category.</div></div>';
+    if (!flattenedSkills.length) {
+      console.error('No skills found');
+      track.innerHTML = '<div class="skill-slide"><div class="skill-description">No skills found.</div></div>';
       return;
     }
     
-    console.log(`Rendering ${skills.length} skills for category: ${category}`);
-    allSkills = skills;
-    currentSlide = 0;
-    
-    // Clear and rebuild track
-    track.innerHTML = '';
-    indicators.innerHTML = '';
-    
+    // Update dimensions first before calculating positions
     updateCarouselWidth();
     
-    skills.forEach((skill, index) => {
-      // Create slide
-      const slide = document.createElement('div');
-      slide.className = 'skill-slide';
-      slide.style.width = carouselWidth + 'px';
-      
-      // Generate image path from skill name
-      const imageName = skill.name.toLowerCase().replace(/\s+/g, '_').replace(/\//g, '_');
-      const imagePath = `data/skills/${imageName}.png`;
-      
-      slide.innerHTML = `
-        <img src="${imagePath}" alt="${skill.name}" class="skill-image" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-        <div class="skill-icon-large" style="display:none;">${skill.icon}</div>
-        <div class="skill-name">${skill.icon} ${skill.name}</div>
-        <div class="skill-description">${skill.description}</div>
-      `;
-      track.appendChild(slide);
-      
-      // Create indicator
-      const dot = document.createElement('div');
-      dot.className = `indicator-dot ${index === 0 ? 'active' : ''}`;
-      dot.addEventListener('click', () => goToSlide(index));
-      indicators.appendChild(dot);
+    // Find starting position for this category
+    const catRange = categoryRanges[category];
+    if (catRange) {
+      // Start at first slide of category (accounting for prepended clones)
+      currentSlide = catRange.start + slidesPerView;
+    } else {
+      currentSlide = slidesPerView;
+    }
+    
+    allSkills = flattenedSkills;
+    
+    // Use DocumentFragment for better performance
+    const fragment = document.createDocumentFragment();
+    
+    // Clone last few slides and prepend (for wrapping left)
+    for (let i = flattenedSkills.length - slidesPerView; i < flattenedSkills.length; i++) {
+      const slide = createSlide(flattenedSkills[i]);
+      slide.classList.add('clone');
+      fragment.appendChild(slide);
+    }
+    
+    // Add all real slides
+    flattenedSkills.forEach((skill) => {
+      const slide = createSlide(skill);
+      fragment.appendChild(slide);
     });
     
-    updateCarousel();
+    // Clone first few slides and append (for wrapping right)
+    for (let i = 0; i < slidesPerView; i++) {
+      const slide = createSlide(flattenedSkills[i]);
+      slide.classList.add('clone');
+      fragment.appendChild(slide);
+    }
+    
+    // Clear track and append fragment in one operation
+    track.innerHTML = '';
+    track.appendChild(fragment);
+    
+    // Set initial position without transition
+    track.style.transition = 'none';
+    track.style.transform = `translateX(${-currentSlide * slideWidth}px)`;
+    
+    // Double rAF: ensures no-transition paint is committed before re-enabling
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      track.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+      updateActiveCategory();
+    }));
   }
   
-  function goToSlide(index) {
-    currentSlide = index;
-    updateCarousel();
+  function updateActiveCategory() {
+    // Determine which category is currently showing based on leftmost visible slide
+    const realIndex = ((currentSlide - slidesPerView) % flattenedSkills.length + flattenedSkills.length) % flattenedSkills.length;
+    const currentSkill = flattenedSkills[realIndex];
+    
+    if (currentSkill && currentSkill.category !== currentCategory) {
+      currentCategory = currentSkill.category;
+      
+      // Update bookmark highlights
+      bookmarks.forEach(b => {
+        b.classList.toggle('active', b.dataset.category === currentCategory);
+      });
+    }
   }
   
   function updateCarousel() {
     updateCarouselWidth();
-    const offset = -currentSlide * carouselWidth;
+    const offset = -currentSlide * slideWidth;
     track.style.transform = `translateX(${offset}px)`;
-    
-    // Update indicators
-    const dots = indicators.querySelectorAll('.indicator-dot');
-    dots.forEach((dot, index) => {
-      dot.classList.toggle('active', index === currentSlide);
-    });
-    
-    // Update buttons
-    prevBtn.disabled = currentSlide === 0;
-    nextBtn.disabled = currentSlide === allSkills.length - 1;
   }
+  
+  let transitionTimeout = null;
+
+  function finishTransition() {
+    if (transitionTimeout) { clearTimeout(transitionTimeout); transitionTimeout = null; }
+    isTransitioning = false;
+
+    // Check if we're at a clone and need to jump to real position
+    if (currentSlide < slidesPerView) {
+      track.style.transition = 'none';
+      currentSlide = flattenedSkills.length + currentSlide;
+      track.style.transform = `translateX(${-currentSlide * slideWidth}px)`;
+      // Double rAF: first frame commits the no-transition paint, second re-enables
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        track.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        updateActiveCategory();
+      }));
+    } else if (currentSlide >= flattenedSkills.length + slidesPerView) {
+      track.style.transition = 'none';
+      currentSlide = currentSlide - flattenedSkills.length;
+      track.style.transform = `translateX(${-currentSlide * slideWidth}px)`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        track.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        updateActiveCategory();
+      }));
+    } else {
+      updateActiveCategory();
+    }
+  }
+
+  track.addEventListener('transitionend', finishTransition);
   
   // Event listeners
   prevBtn.addEventListener('click', () => {
-    if (currentSlide > 0) {
-      currentSlide--;
-      updateCarousel();
-    }
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentSlide--;
+    updateCarousel();
+    transitionTimeout = setTimeout(finishTransition, 600);
   });
   
   nextBtn.addEventListener('click', () => {
-    if (currentSlide < allSkills.length - 1) {
-      currentSlide++;
-      updateCarousel();
-    }
+    if (isTransitioning) return;
+    isTransitioning = true;
+    currentSlide++;
+    updateCarousel();
+    transitionTimeout = setTimeout(finishTransition, 600);
   });
   
   bookmarks.forEach(bookmark => {
     bookmark.addEventListener('click', () => {
-      bookmarks.forEach(b => b.classList.remove('active'));
-      bookmark.classList.add('active');
-      currentCategory = bookmark.dataset.category;
-      renderCarousel(currentCategory);
+      const targetCategory = bookmark.dataset.category;
+      if (targetCategory === currentCategory) return;
+      
+      // Jump to the start of the clicked category
+      const catRange = categoryRanges[targetCategory];
+      if (catRange) {
+        isTransitioning = true;
+        currentSlide = catRange.start + slidesPerView; // Account for clones
+        currentCategory = targetCategory;
+        
+        bookmarks.forEach(b => b.classList.remove('active'));
+        bookmark.classList.add('active');
+        
+        updateCarousel();
+        transitionTimeout = setTimeout(finishTransition, 600);
+      }
     });
   });
   
   // Keyboard navigation
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft' && currentSlide > 0) {
+    if (e.key === 'ArrowLeft') {
+      if (isTransitioning) return;
+      isTransitioning = true;
       currentSlide--;
       updateCarousel();
-    } else if (e.key === 'ArrowRight' && currentSlide < allSkills.length - 1) {
+      transitionTimeout = setTimeout(finishTransition, 600);
+    } else if (e.key === 'ArrowRight') {
+      if (isTransitioning) return;
+      isTransitioning = true;
       currentSlide++;
       updateCarousel();
+      transitionTimeout = setTimeout(finishTransition, 600);
     }
   });
   
@@ -669,12 +796,20 @@ function initSkillsCarousel() {
   });
   
   function handleSwipe() {
-    if (touchStartX - touchEndX > 50 && currentSlide < allSkills.length - 1) {
+    if (touchStartX - touchEndX > 50) {
+      // Swipe left - go forward
+      if (isTransitioning) return;
+      isTransitioning = true;
       currentSlide++;
       updateCarousel();
-    } else if (touchEndX - touchStartX > 50 && currentSlide > 0) {
+      transitionTimeout = setTimeout(finishTransition, 600);
+    } else if (touchEndX - touchStartX > 50) {
+      // Swipe right - go back
+      if (isTransitioning) return;
+      isTransitioning = true;
       currentSlide--;
       updateCarousel();
+      transitionTimeout = setTimeout(finishTransition, 600);
     }
   }
   
