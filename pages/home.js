@@ -28,6 +28,7 @@ async function initHome() {
   initTextRotation();
   initSkillsCarousel();
   initResearchCard();
+  initTestimonials();
 
   const canvas = document.getElementById("fourierCanvas");
   if (!canvas) return;
@@ -171,7 +172,7 @@ async function initHome() {
 
   const DURATION = 5;
   const dt = (2 * Math.PI) / (DURATION * 60);
-  const MAX_TRACE_POINTS = 350;
+  const MAX_TRACE_POINTS = 300; // Reduced from 500
 
   let isSettled = false;
   const SETTLE_TIME = 1;
@@ -906,4 +907,179 @@ function initResearchCard() {
     
     animationId = requestAnimationFrame(animate);
   }
+}
+// ─── Testimonials ────────────────────────────────────────────
+async function initTestimonials() {
+  const section  = document.getElementById('testimonials-section');
+  const track    = document.getElementById('testimonials-track');
+  const scrubber = document.getElementById('testimonials-scrubber');
+  const pauseBtn = document.getElementById('testimonials-pause');
+  if (!section || !track || !scrubber || !pauseBtn) return;
+
+  // ── Load data ───────────────────────────────────────────────
+  let testimonials = [];
+  try {
+    const res = await fetch('data/testimonials.json');
+    if (!res.ok) throw new Error('Not found');
+    testimonials = await res.json();
+  } catch {
+    track.innerHTML = '<div style="padding:1rem;color:var(--muted);text-align:center;">No testimonials found.</div>';
+    section.classList.add('static');
+    return;
+  }
+  if (!testimonials.length) {
+    section.classList.add('static');
+    return;
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────
+  function initials(name) {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  }
+
+  function makeCard(t) {
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    card.innerHTML = `
+      <div class="testimonial-quote">${t.quote}</div>
+      <div class="testimonial-footer">
+        <div class="testimonial-avatar">${initials(t.name)}</div>
+        <div class="testimonial-meta">
+          <div class="testimonial-name">${t.name}</div>
+          <div class="testimonial-title">${t.title}</div>
+          ${t.organization ? `<div class="testimonial-org">${t.organization}</div>` : ''}
+        </div>
+      </div>`;
+    return card;
+  }
+
+  // ── Render one real set ──────────────────────────────────────
+  testimonials.forEach(t => track.appendChild(makeCard(t)));
+
+  // Wait two frames for layout to settle
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  // ── Measure ──────────────────────────────────────────────────
+  const GAP = 20; // 1.25rem at 16px
+  function measureOneSet() {
+    const cards = track.querySelectorAll('.testimonial-card');
+    let w = 0;
+    // Only sum the first real set (testimonials.length cards)
+    for (let i = 0; i < testimonials.length; i++) {
+      w += cards[i].getBoundingClientRect().width + GAP;
+    }
+    return w;
+  }
+
+  let oneSetW = measureOneSet();
+  const viewW = window.innerWidth;
+
+  // ── Static mode: cards fit on screen ────────────────────────
+  if (oneSetW <= viewW) {
+    section.classList.add('static');
+    return; // nothing more to do — no scroll, no controls
+  }
+
+  // ── Scroll mode: append one clone set as seamless tail ───────
+  // We only need one extra copy: when we've scrolled oneSetW px the
+  // tail (which is identical to the head) is now on screen and we
+  // silently jump offset back to 0.
+  testimonials.forEach(t => {
+    const clone = makeCard(t);
+    clone.classList.add('t-clone');
+    track.appendChild(clone);
+  });
+
+  // ── State ────────────────────────────────────────────────────
+  let offset   = 0;
+  let paused   = false;
+  let scrubbing = false;
+  const SPEED  = 0.6; // px/frame ≈ 36 px/s at 60 fps
+
+  function applyOffset(px) {
+    track.style.transform = `translateX(${-px}px)`;
+  }
+
+  function syncScrubber() {
+    const v = Math.round((offset / oneSetW) * 1000);
+    scrubber.value = v;
+    scrubber.style.setProperty('--scrub', (v / 10) + '%');
+  }
+
+  function setPauseIcon() {
+    pauseBtn.innerHTML = paused ? '&#9654;' : '&#10074;&#10074;';
+  }
+  setPauseIcon();
+
+  // ── Animation loop ──────────────────────────────────────────
+  function tick() {
+    requestAnimationFrame(tick);
+    if (paused || scrubbing) return;
+
+    offset += SPEED;
+    if (offset >= oneSetW) offset -= oneSetW; // seamless wrap
+
+    applyOffset(offset);
+    syncScrubber();
+  }
+  requestAnimationFrame(tick);
+
+  // ── Pause button ─────────────────────────────────────────────
+  pauseBtn.addEventListener('click', () => {
+    paused = !paused;
+    setPauseIcon();
+  });
+
+  // ── Scrubber ─────────────────────────────────────────────────
+  scrubber.addEventListener('mousedown',  () => { scrubbing = true; paused = true; setPauseIcon(); });
+  scrubber.addEventListener('touchstart', () => { scrubbing = true; paused = true; setPauseIcon(); }, { passive: true });
+  scrubber.addEventListener('mouseup',    () => { scrubbing = false; });
+  scrubber.addEventListener('touchend',   () => { scrubbing = false; });
+
+  scrubber.addEventListener('input', () => {
+    offset = (Number(scrubber.value) / 1000) * oneSetW;
+    applyOffset(offset);
+    scrubber.style.setProperty('--scrub', (Number(scrubber.value) / 10) + '%');
+  });
+
+  // ── Pointer drag on track ────────────────────────────────────
+  let isDragging = false, dragStartX = 0, dragStartOffset = 0;
+
+  track.style.pointerEvents = 'auto';
+
+  track.addEventListener('pointerdown', (e) => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartOffset = offset;
+    track.classList.add('grabbing');
+    track.setPointerCapture(e.pointerId);
+    scrubbing = true;
+    paused = true;
+    setPauseIcon();
+  });
+
+  track.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const delta = dragStartX - e.clientX;
+    offset = ((dragStartOffset + delta) % oneSetW + oneSetW) % oneSetW;
+    applyOffset(offset);
+    syncScrubber();
+  });
+
+  const endDrag = () => {
+    isDragging = false;
+    scrubbing = false;
+    track.classList.remove('grabbing');
+  };
+  track.addEventListener('pointerup',     endDrag);
+  track.addEventListener('pointercancel', endDrag);
+
+  // ── Resize ───────────────────────────────────────────────────
+  window.addEventListener('resize', () => {
+    oneSetW = measureOneSet();
+    // Re-check if we now fit statically (e.g. window grew)
+    if (oneSetW <= window.innerWidth && !section.classList.contains('static')) {
+      section.classList.add('static');
+    }
+  });
 }

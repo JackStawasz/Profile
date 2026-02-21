@@ -379,3 +379,266 @@
   position: relative;
   min-height: 500px;
 }
+/* ─── Testimonials Section ─────────────────────────────────── */
+.testimonials-section {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  margin-left: -50vw;
+  margin-top: 0;
+  background: var(--container);
+  border-top: 1px solid rgba(125,211,252,0.08);
+  border-bottom: 1px solid rgba(125,211,252,0.08);
+  padding: 2rem 0 1.5rem;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+.testimonials-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.testimonials-header h2 {
+  font-size: 1.6rem;
+  color: var(--accent);
+  margin: 0;
+  text-align: center;
+}
+
+/* Track wrapper — clips the scrolling cards */
+.testimonials-track-wrapper {
+  position: relative;
+  overflow: hidden;
+  /* Fade edges */
+  mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+
+/* The scrolling strip of cards */
+.testimonials-track {
+  display: flex;
+  gap: 1.25rem;
+  padding: 0.5rem 2rem;
+  /* width is set in JS once cards are built */
+  will-change: transform;
+  cursor: grab;
+  user-select: none;
+}
+
+.testimonials-track.grabbing {
+  cursor: grabbing;
+}
+
+/* Individual card */
+.testimonial-card {
+  flex-shrink: 0;
+  width: clamp(260px, 32vw, 360px);
+  background: linear-gradient(160deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(125,211,252,0.12);
+  border-radius: 14px;
+  padding: 1.4rem 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  pointer-events: none; /* cards themselves don't steal grab events */
+}
+
+.testimonials-track:not(.grabbing) .testimonial-card:hover {
+  border-color: rgba(125,211,252,0.35);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45), 0 0 16px rgba(125,211,252,0.1);
+  transform: translateY(-3px);
+}
+
+.testimonial-quote {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #ccd8e4;
+  position: relative;
+  padding-left: 1.1rem;
+}
+
+.testimonial-quote::before {
+  content: '\201C'; /* " */
+  position: absolute;
+  left: -0.1rem;
+  top: -0.2rem;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.5;
+  font-family: Georgia, serif;
+}
+
+.testimonial-footer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 0.85rem;
+}
+
+.testimonial-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), rgba(125,211,252,0.3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f1724;
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.testimonial-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.testimonial-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e6eef6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.testimonial-title {
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.testimonial-org {
+  font-size: 0.75rem;
+  color: var(--accent);
+  opacity: 0.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Static (no-scroll) layout */
+.testimonials-section.static .testimonials-track-wrapper {
+  mask-image: none;
+  -webkit-mask-image: none;
+  overflow: visible;
+}
+
+.testimonials-section.static .testimonials-track {
+  flex-wrap: wrap;
+  justify-content: center;
+  cursor: default;
+  transform: none !important;
+}
+
+.testimonials-section.static .testimonial-card {
+  pointer-events: auto;
+}
+
+.testimonials-section.static .testimonials-controls {
+  display: none;
+}
+
+/* Controls bar */
+.testimonials-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 2rem 0.25rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.testimonials-pause-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid rgba(125,211,252,0.35);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.testimonials-pause-btn:hover {
+  background: rgba(125,211,252,0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(125,211,252,0.25);
+}
+
+/* Scrubber */
+.testimonials-scrubber {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.1);
+  outline: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.testimonials-scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(125,211,252,0.5);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.testimonials-scrubber::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 14px rgba(125,211,252,0.7);
+}
+
+.testimonials-scrubber::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(125,211,252,0.5);
+}
+
+/* fill left of thumb */
+.testimonials-scrubber {
+  --scrub: 0%;
+  background: linear-gradient(
+    to right,
+    rgba(125,211,252,0.6) 0%,
+    rgba(125,211,252,0.6) var(--scrub),
+    rgba(255,255,255,0.1) var(--scrub),
+    rgba(255,255,255,0.1) 100%
+  );
+}
+
+@media (max-width: 600px) {
+  .testimonial-card {
+    width: clamp(220px, 78vw, 300px);
+  }
+}
